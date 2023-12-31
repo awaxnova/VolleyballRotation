@@ -1,0 +1,35 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6d2b7bf21ecad894a8d682197ff6151f, type: 3}
+  m_Name: _dataPosition_62rot5_serveReceiveStack
+  m_EditorClassIdentifier: 
+  formation: 0
+  rotationNumber: 5
+  situation: 2
+  positions:
+  - {x: 6.21, y: 0.77000046, z: 9.44}
+  - {x: 1.0900002, y: 0.77000046, z: 7.91}
+  - {x: 1.61, y: 0.77000046, z: 3.32}
+  - {x: 4.27, y: 0.77000046, z: 2.42}
+  - {x: 6.75, y: 0.77000046, z: 3.11}
+  - {x: 6.67, y: 0.77000046, z: 6.94}
+  positionMarkers:
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  positionMarkerPrefab: {fileID: 9063309631332321280, guid: 5ea2a9050d79d184591ca717664b96f7, type: 3}
+  allowPositionOverwrite: 1
+  allowPositionMarkerOverwrite: 0
+  enableDestroyDuringCleanUp: 0

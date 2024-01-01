@@ -42,6 +42,9 @@ namespace VolleyballRotation
         [HideInTables]
         public Vector3[] positions = new Vector3[6];
 
+        [HideInTables]
+        public string[] playerNamesOverrides = new string[6];
+
         // The placeholders for positions of the players in this rotation's situation.
         // This is indexed by the position index, 0 through 5, corresponding to players 1 through 6 in this rotation, where index 0 represents player 1, who is in the back right of rotation index 0.
         [HideInTables]

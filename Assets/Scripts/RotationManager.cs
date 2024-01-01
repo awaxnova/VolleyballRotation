@@ -140,8 +140,7 @@ namespace VolleyballRotation
             for (int i = 0; i < 6; i++)
             {
                 var pm = Instantiate(playerMarkerPrefab); 
-                playerMarkers.Add(pm);
-                
+                playerMarkers.Add(pm);               
 
                 var stm = pm.GetComponentInChildren<SuperTextMesh>();
                 if (stm != null)
@@ -257,7 +256,18 @@ namespace VolleyballRotation
                             //playerMarkers[i].transform.localScale = dataPosition.positions[i].localScale;
                         }
                     );
+
+                    var stm = playerMarkers[i].GetComponentInChildren<SuperTextMesh>();
+                    if (stm != null)
+                    {
+                        if(String.IsNullOrEmpty(dataPosition.playerNamesOverrides[i]))
+                            stm.text = playerNames[i];
+                        else                       
+                            stm.text = dataPosition.playerNamesOverrides[i];
+                    }
+
                 }
+
             }
             else
             {
@@ -274,7 +284,6 @@ namespace VolleyballRotation
                 FaceCamera(stm.gameObject,true);
             }
         }
-
 
         private void UpdateNextPositionArrows(int currentRotation, Situation currentSituation, int nextRotation, Situation nextSituation)
         {

@@ -16,13 +16,20 @@ MonoBehaviour:
   rotationNumber: 1
   situation: 1
   positions:
-  - {x: 7.31, y: 1.2, z: -0.13}
-  - {x: 5.35, y: 1.2, z: 6.18}
-  - {x: 4.14, y: 1.2, z: 7.92}
-  - {x: 2.86, y: 1.2, z: 7.55}
-  - {x: 0.91, y: 1.2, z: 4.9}
-  - {x: 3.92, y: 1.2, z: 2.01}
-  positionMarkers: []
+  - {x: 7.31, y: 1.2, z: -0.13000011}
+  - {x: 4.58, y: 1.2, z: 6.65}
+  - {x: 4.14, y: 1.2, z: 8.32}
+  - {x: 3.28, y: 1.2, z: 7.85}
+  - {x: 1.55, y: 1.2, z: 3.15}
+  - {x: 5.16, y: 1.2, z: 3.01}
+  positionMarkers:
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
   positionMarkerPrefab: {fileID: 9063309631332321280, guid: 5ea2a9050d79d184591ca717664b96f7, type: 3}
-  allowPositionOverwrite: 0
+  allowPositionOverwrite: 1
   allowPositionMarkerOverwrite: 0
+  enableDestroyDuringCleanUp: 0

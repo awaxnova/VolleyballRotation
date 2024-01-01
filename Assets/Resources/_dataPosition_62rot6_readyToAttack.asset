@@ -13,15 +13,15 @@ MonoBehaviour:
   m_Name: _dataPosition_62rot6_readyToAttack
   m_EditorClassIdentifier: 
   formation: 0
-  rotationNumber: 5
+  rotationNumber: 6
   situation: 3
   positions:
-  - {x: 6.21, y: 0.77000046, z: 9.44}
-  - {x: -0.58, y: 0.77000046, z: 7.45}
-  - {x: 2.39, y: 0.77000046, z: 4.04}
-  - {x: 5.79, y: 0.77000046, z: 3.77}
-  - {x: 8.61, y: 0.77000046, z: 4.64}
-  - {x: 3.67, y: 0.77000046, z: 6.48}
+  - {x: 7.81, y: 0.77000046, z: 7.23}
+  - {x: -0.02, y: 0.77000046, z: 5.52}
+  - {x: 4.27, y: 0.77000046, z: 7.26}
+  - {x: 6.06, y: 0.77000046, z: 9.07}
+  - {x: 2.53, y: 0.77000046, z: 3.52}
+  - {x: 6.54, y: 0.77000046, z: 3.93}
   positionMarkers:
   - {fileID: 0}
   - {fileID: 0}

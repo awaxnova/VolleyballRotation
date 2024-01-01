@@ -1,11 +1,13 @@
 using Arrow;
 using DG.Tweening;
 using Sirenix.OdinInspector;
+using Sirenix.OdinInspector.Editor;
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Unity.VisualScripting;
+using UnityEditor;
 using UnityEngine;
 
 namespace VolleyballRotation
@@ -67,7 +69,8 @@ namespace VolleyballRotation
         [InlineButton("Rotate")]
         [InlineButton("BackRotate")]       
         public int currentRotation = 1;
-        [EnumToggleButtons]
+        
+        //[EnumToggleButtons,OnValueChanged("OnValueChangedCurrentSituation")]
         public Situation currentSituation = Situation.Rotation;
 
         [Header("Next Position")]
@@ -75,16 +78,48 @@ namespace VolleyballRotation
         [InlineButton("NextRotate","Rotate")]
         [InlineButton("NextBackRotate","BackRotate")]
         public int nextRotation = 1;
-        [EnumToggleButtons]
+        //[EnumToggleButtons]
         public Situation nextSituation = Situation.Rotation;
 
         private int lastCurrentRotation = 0;
         private Situation lastCurrentSituation = Situation.None;
 
-        private void Rotate() { currentRotation = currentRotation == 6 ? 1 : Mathf.Clamp(currentRotation + 1, 1, 6); }
-        private void BackRotate() { currentRotation = currentRotation == 1 ? 6 : Mathf.Clamp(currentRotation - 1, 1, 6); }
+        private void Rotate() { currentRotation = currentRotation == 6 ? 1 : Mathf.Clamp(currentRotation + 1, 1, 6); nextRotation = currentRotation; }
+        private void BackRotate() { currentRotation = currentRotation == 1 ? 6 : Mathf.Clamp(currentRotation - 1, 1, 6); nextRotation = currentRotation; }
         private void NextRotate() { nextRotation = nextRotation == 6 ? 1 : Mathf.Clamp(nextRotation + 1, 1, 6); }
         private void NextBackRotate() { nextRotation = nextRotation == 1 ? 6 : Mathf.Clamp(nextRotation - 1, 1, 6); }
+
+/*
+        private void OnValueChangedCurrentSituation()
+        {
+            // If someone changes the current situation, just change the Next Situation to match.
+            nextSituation = currentSituation;
+            nextRotation = currentRotation;
+        }
+
+        private void OnValueChangedNextSituation()
+        {
+            // If someone changes the next situation, leave it as such... if it's clicked again after that, (double click event) then change the current situation to match.
+        }
+*/
+
+        public void OnSituationClickedHandler(Situation clickedSituation, Situation oldSituation) { 
+            // If the same situation was clicked, then change the current situation to match the next situation, this makes the transition from the current situation to the next situation actually happen.
+            // If a different situation was clicked, then change the next situation to match the clicked situation... this sets up the arrows to show the transition from the current situation to the next situation.
+
+            // If the same situation was clicked, but the rotations are different, then change the current rotation to match the next rotation
+
+            if (clickedSituation == oldSituation)
+            {
+                currentSituation = nextSituation;
+                currentRotation = nextRotation;
+            }
+            else
+            {
+                //nextRotation = currentRotation;
+                nextSituation = clickedSituation;
+            }
+        }
 
         // Start is called before the first frame update
         void Start()
@@ -160,7 +195,6 @@ namespace VolleyballRotation
                         }
                         );
 
-                    FaceCamera(rotationMarkers[i]);
                 }
 
                 // Enable the decimalPrefabs[currentRotation] and disable the rest, at the location of the currentRotationPosition
@@ -170,12 +204,22 @@ namespace VolleyballRotation
                     { 
                         decimalPrefabs[j].SetActive(j == currentRotation);
                         decimalPrefabs[j].transform.position = currentRotationPosition.transform.position;
-                        FaceCamera(decimalPrefabs[j]);
                     }
                 }
 
             }
 
+            for(int i = 0; i < rotationMarkers.Length; i++)
+            {
+                if (rotationMarkers[i] != null)
+                    FaceCamera(rotationMarkers[i]);
+            }
+
+            for(int i = 0; i < decimalPrefabs.Length; i++)
+            {
+                if (decimalPrefabs[i] != null)
+                    FaceCamera(decimalPrefabs[i]);
+            }
 
             UpdatePlayerPositions(currentRotation, currentSituation);
             UpdateNextPositionArrows(currentRotation, currentSituation, nextRotation, nextSituation);
@@ -212,9 +256,7 @@ namespace VolleyballRotation
                             //playerMarkers[i].transform.rotation = dataPosition.positions[i].rotation;
                             //playerMarkers[i].transform.localScale = dataPosition.positions[i].localScale;
                         }
-                                               );
-                    var stm = playerMarkers[i].GetComponentInChildren<SuperTextMesh>();
-                    FaceCamera(stm.gameObject,true);
+                    );
                 }
             }
             else
@@ -224,6 +266,12 @@ namespace VolleyballRotation
                 string dataPositionString = DataPosition.data_list.Aggregate("", (current, next) => current + next.ToString() + "\n");
 
                 Debug.LogWarning($"No DataPosition found for situation={currentSituation} and rotation={currentRotation} \n{dataPositionString}");
+            }
+
+            for(int i = 0; i < playerMarkers.Count; i++)
+            {
+                var stm = playerMarkers[i].GetComponentInChildren<SuperTextMesh>();
+                FaceCamera(stm.gameObject,true);
             }
         }
 
@@ -388,7 +436,7 @@ namespace VolleyballRotation
             }
         }
 
-    }
+        }
 
 
 }

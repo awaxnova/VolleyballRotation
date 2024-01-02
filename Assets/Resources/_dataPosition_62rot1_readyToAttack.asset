@@ -22,6 +22,13 @@ MonoBehaviour:
   - {x: -0.46, y: 1.2, z: 6.46}
   - {x: 2.04, y: 1.2, z: 2.72}
   - {x: 5.52, y: 1.2, z: 2.1}
+  playerNamesOverrides:
+  - 
+  - 
+  - <c=blue>M<sub>1</sub>
+  - 
+  - 
+  - <c=blue>M<sub>2</sub>/L
   positionMarkers:
   - {fileID: 0}
   - {fileID: 0}

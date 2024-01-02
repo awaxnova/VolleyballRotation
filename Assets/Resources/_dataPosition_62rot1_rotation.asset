@@ -22,7 +22,15 @@ MonoBehaviour:
   - {x: 0.98, y: 1.2, z: 6.6}
   - {x: 0.91, y: 1.2, z: 1.31}
   - {x: 3.92, y: 1.2, z: 1.1}
+  playerNamesOverrides:
+  - 
+  - 
+  - <c=blue>M<sub>1</sub>
+  - 
+  - 
+  - <c=blue>M<sub>2</sub>/L
   positionMarkers: []
   positionMarkerPrefab: {fileID: 9063309631332321280, guid: 5ea2a9050d79d184591ca717664b96f7, type: 3}
   allowPositionOverwrite: 0
   allowPositionMarkerOverwrite: 0
+  enableDestroyDuringCleanUp: 0

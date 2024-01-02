@@ -1,13 +1,9 @@
 using Arrow;
 using DG.Tweening;
 using Sirenix.OdinInspector;
-using Sirenix.OdinInspector.Editor;
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using Unity.VisualScripting;
-using UnityEditor;
 using UnityEngine;
 
 namespace VolleyballRotation
@@ -63,6 +59,8 @@ namespace VolleyballRotation
         /// How many second to take to transition the player positions to the new position.
         /// </summary>
         public float playerPositionTransitionDuration = 0.2f;
+
+        public SuperTextMesh uiStatusDisplay;
 
         [Header("Current Position")]
         [ShowInInspector, Range(1,6)]
@@ -445,7 +443,153 @@ namespace VolleyballRotation
             }
         }
 
+        #region Handlers
+        public void ButtonRotation1()        { HandlerClickedRotation(1); }       
+        public void ButtonRotation2()        { HandlerClickedRotation(2); }
+        public void ButtonRotation3()        { HandlerClickedRotation(3); }
+        public void ButtonRotation4()        { HandlerClickedRotation(4); }
+        public void ButtonRotation5()        { HandlerClickedRotation(5); }
+        public void ButtonRotation6()        { HandlerClickedRotation(6); }
+
+        // Button handlers for Rotation, Serve, Base Defense, ServeReceive, and Attack
+        public void ButtonRotation()        {HandlerClickedSituation(Situation.Rotation);}      
+        public void ButtonServe()           { HandlerClickedSituation(Situation.ServeStack); }
+        public void ButtonBaseDefense()     { HandlerClickedSituation(Situation.BaseDefense); }
+        public void ButtonServeReceive()    { HandlerClickedSituation(Situation.ServeReceiveStack); }
+        public void ButtonAttack()          { HandlerClickedSituation(Situation.ReadyToAttack); }
+
+        Situation lastClickedSituation = Situation.None;
+        int lastClickedRotation = 0;
+
+        private void UpdateStatusDisplay()
+        {
+            string message = $"[{currentRotation}] {currentSituation}";
+
+            if((currentSituation != nextSituation) || (currentRotation != nextRotation))
+            {
+                message += $"\nTransition to : [{nextRotation}] {nextSituation}";
+            }
+
+            uiStatusDisplay.text = message;
+        }
+
+        private void HandlerClickedSituation(Situation sit)
+        {
+            //Debug.Log($"HandlerClickedSituation({sit}) called");
+
+            //if(lastClickedSituation == sit)
+            //{
+            //    // Same was clicked, so update the current to match this value, and then update the next to match the current.
+            //    currentSituation = sit;
+            //    nextSituation = currentSituation;
+            //    nextRotation = currentRotation;
+
+            //    UpdateStatusDisplay();
+            //}
+            //else
+            //{
+            //    // This is a new value clicked, so update the next rotation to match this value.
+            //    nextSituation = sit;
+
+            //    UpdateStatusDisplay();
+            //}
+
+            //lastClickedSituation = sit;
+
+            HandleClick(false, 0, true, sit);
+        }
+
+        private void HandlerClickedRotation(int rot)
+        {
+            //Debug.Log($"HandlerClickedRotation({rot}) called");
+
+            //if(lastClickedRotation == rot)
+            //{
+            //    // Same was clicked, so update the current to match this value, and then update the next to match the current.
+            //    currentRotation = rot;
+            //    //currentSituation = Situation.ServeStack; // When we rotate, we're serving, except for the initial serve receive due to coin toss.
+            //    nextRotation = currentRotation;
+            //    nextSituation = currentSituation;
+
+            //    lastClickedSituation = currentSituation;
+
+            //    UpdateStatusDisplay();
+            //}
+            //else
+            //{
+            //    // This is a new value clicked, so update the next rotation to match this value.
+            //    nextRotation = rot;
+
+            //    UpdateStatusDisplay();
+            //}
+
+            //lastClickedRotation = rot;
+
+            HandleClick(true, rot, false, Situation.None);
         }
 
 
-}
+        private void HandleClick(bool wasClickedRotation, int rot, bool wasClickedSituation, Situation sit)
+        {
+            //bool newValueRotation = (lastClickedRotation != rot);
+            //bool newValueSituation = (lastClickedSituation != sit);
+
+            // When the situation was clicked and is a new value, then we need to update the next situation to match the clicked situation.
+            // When the situation was clicked and is the same value, then we need to update the current situation to match the clicked situation, and then update the next situation to match the current situation.
+            // When the rotation was clicked and is a new value, then we need to update the next rotation to match the clicked rotation.
+            // When the rotation was clicked and is the same value, then we need to update the current rotation to match the clicked rotation, and then update the next rotation to match the current rotation.
+
+            if (wasClickedSituation)
+            { 
+                // if the situation clicked doesn't match the next situation, then update the next situation to match the clicked situation.
+                if( nextSituation != sit)
+                {
+                    // This is a new value clicked, so update the next situation to match this value.
+                    nextSituation = sit;
+                }
+                else
+                {
+                    // clicked matches next, so update the current to match this value
+                    currentSituation = sit;
+                    nextRotation = currentRotation;
+                }
+            }
+
+            if (wasClickedRotation)
+            {
+                if (nextRotation != rot)
+                {
+                    // This is a new value clicked, so update the next rotation to match this value.
+                    nextRotation = rot;
+                }
+                else
+                {
+                    // Same was clicked, so update the current to match this value, and then update the next to match the current.
+                    currentRotation = rot;
+                    currentSituation = nextSituation;
+                    //currentSituation = Situation.ServeStack; // When we rotate, we're serving, except for the initial serve receive due to coin toss.
+
+                    nextRotation = currentRotation;
+                }
+            }
+
+            UpdateStatusDisplay();
+
+            // TODO - we may not need this logic since we're using the current and next values to determine the rotation and situation.
+            // Update the last clicked values
+            if(wasClickedRotation)
+            {
+                lastClickedRotation = rot;
+            }
+
+            if(wasClickedSituation)
+            {
+                lastClickedSituation = sit;
+            }
+        }
+        #endregion
+
+    }
+
+
+    }

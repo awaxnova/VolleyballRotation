@@ -1,5 +1,8 @@
 using Sirenix.OdinInspector;
+#if UNITY_EDITOR
 using Sirenix.OdinInspector.Editor;
+#endif
+
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -74,6 +77,9 @@ namespace VolleyballRotation
     }
 
 
+    // preprocessor if we're in unity editor mode
+#if UNITY_EDITOR
+
     // Create a custom drawer for the Situation enum using Odin
     public class SituationEnumDrawer : OdinValueDrawer<Situation>
     {
@@ -139,6 +145,8 @@ namespace VolleyballRotation
 
         }
     }
+#endif
+
 
 }
 

@@ -21,6 +21,8 @@ namespace Arrow
 
         private bool arrowEnabled = true;
 
+        private bool shadowsEnabled = false;
+
         protected override void Update()
         {
             base.Update();
@@ -30,7 +32,21 @@ namespace Arrow
                 TurnOffArrow();
             }
             else
-            { 
+            {
+                var shadowMode = UnityEngine.Rendering.ShadowCastingMode.Off;
+                if (shadowsEnabled)
+                    shadowMode = UnityEngine.Rendering.ShadowCastingMode.On;
+
+                foreach (var rend in renderers)
+                {
+                        rend.shadowCastingMode = shadowMode;
+                }
+
+                if (arrow != null)
+                {
+                    arrow.GetComponent<MeshRenderer>().shadowCastingMode = shadowMode;
+                }
+
                 UpdateSegments();
             }
         }
@@ -112,6 +128,11 @@ namespace Arrow
         public void SetSegmentLength(float segmentLength)
         {
             this.segmentLength = segmentLength;
+        }
+
+        public void SetShadowMode(bool enableCastShadow)
+        {
+            shadowsEnabled = enableCastShadow;
         }
     }
 }

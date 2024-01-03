@@ -62,6 +62,10 @@ namespace VolleyballRotation
 
         public SuperTextMesh uiStatusDisplay;
 
+
+        public UIButtonGroupColorControl buttonGroupRotation;
+        public UIButtonGroupColorControl buttonGroupSituation;
+
         [Header("Current Position")]
         [ShowInInspector, Range(1,6)]
         [InlineButton("Rotate")]
@@ -570,9 +574,12 @@ namespace VolleyballRotation
                     //currentSituation = Situation.ServeStack; // When we rotate, we're serving, except for the initial serve receive due to coin toss.
 
                     nextRotation = currentRotation;
+
                 }
             }
 
+            buttonGroupSituation.SetColorSelection((int)currentSituation, Color.green, (int)nextSituation, Color.red, Color.gray);
+            buttonGroupRotation.SetColorSelection(currentRotation - 1, Color.green, nextRotation - 1, Color.red, Color.gray);
             UpdateStatusDisplay();
 
             // TODO - we may not need this logic since we're using the current and next values to determine the rotation and situation.

@@ -60,20 +60,20 @@ namespace VolleyballRotation
 
     public enum Situation
     {
-        Rotation,
-        ServeStack,
+        Rotation=0,
+        ServeStack=1,
         //TransitionToDefense,
         //BasePositionForDefense,
-        ServeReceiveStack,
+        ServeReceiveStack=2,
         //TransitionToAttack,
-        ReadyToAttack,
+        ReadyToAttack=3,
         //HitterCoverageReady,    // Hitter Coverage can show a map from current position, to the destination positions based on which hitter they're defending.
         //HitterCoverageLeft,
         //HitterCoverageMid,
         //HitterCoverageRight,
         //SwitchToDefense,
-        BaseDefense,
-        None,
+        BaseDefense=4,
+        None=5,
     }
 
 

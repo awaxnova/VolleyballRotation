@@ -8,7 +8,7 @@ Material:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_Name: Default
-  m_Shader: {fileID: 4800000, guid: 495fd89eae4f4a06a795625b3bc194e5, type: 3}
+  m_Shader: {fileID: 4800000, guid: 3ca73f9b5a394e1db644fb11431dc695, type: 3}
   m_ValidKeywords: []
   m_InvalidKeywords:
   - _EMISSION
@@ -90,6 +90,7 @@ Material:
     - _ShadowDistance: 0.13
     - _SmoothnessTextureChannel: 0
     - _SpecularHighlights: 1
+    - _SquareOutline: 0
     - _SrcBlend: 1
     - _Stencil: 0
     - _StencilComp: 8
@@ -99,6 +100,7 @@ Material:
     - _UVSec: 0
     - _UseUIAlphaClip: 0
     - _UseVector3: 0
+    - _Vector3Dropshadow: 0
     - _ZTestMode: 6
     - _ZWrite: 0
     m_Colors:

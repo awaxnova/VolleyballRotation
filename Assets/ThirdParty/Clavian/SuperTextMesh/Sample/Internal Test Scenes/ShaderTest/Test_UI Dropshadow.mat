@@ -9,7 +9,8 @@ Material:
   m_PrefabAsset: {fileID: 0}
   m_Name: Test_UI Dropshadow
   m_Shader: {fileID: 4800000, guid: 6764d8d98906cb94780ac4ff16477da0, type: 3}
-  m_ValidKeywords: []
+  m_ValidKeywords:
+  - VECTOR3_DROPSHADOW
   m_InvalidKeywords: []
   m_LightmapFlags: 5
   m_EnableInstancingVariants: 0
@@ -87,6 +88,11 @@ Material:
     - _ShadowDistance: 4
     - _SquareOutline: 0
     - _SrcBlend: 1
+    - _Stencil: 0
+    - _StencilComp: 8
+    - _StencilOp: 0
+    - _StencilReadMask: 255
+    - _StencilWriteMask: 255
     - _UVSec: 0
     - _UseVector3: 0
     - _Vector3Dropshadow: 1

@@ -91,38 +91,6 @@ namespace VolleyballRotation
         private void NextRotate() { nextRotation = nextRotation == 6 ? 1 : Mathf.Clamp(nextRotation + 1, 1, 6); }
         private void NextBackRotate() { nextRotation = nextRotation == 1 ? 6 : Mathf.Clamp(nextRotation - 1, 1, 6); }
 
-/*
-        private void OnValueChangedCurrentSituation()
-        {
-            // If someone changes the current situation, just change the Next Situation to match.
-            nextSituation = currentSituation;
-            nextRotation = currentRotation;
-        }
-
-        private void OnValueChangedNextSituation()
-        {
-            // If someone changes the next situation, leave it as such... if it's clicked again after that, (double click event) then change the current situation to match.
-        }
-*/
-
-        public void OnSituationClickedHandler(Situation clickedSituation, Situation oldSituation) { 
-            // If the same situation was clicked, then change the current situation to match the next situation, this makes the transition from the current situation to the next situation actually happen.
-            // If a different situation was clicked, then change the next situation to match the clicked situation... this sets up the arrows to show the transition from the current situation to the next situation.
-
-            // If the same situation was clicked, but the rotations are different, then change the current rotation to match the next rotation
-
-            if (clickedSituation == oldSituation)
-            {
-                currentSituation = nextSituation;
-                currentRotation = nextRotation;
-            }
-            else
-            {
-                //nextRotation = currentRotation;
-                nextSituation = clickedSituation;
-            }
-        }
-
         // Start is called before the first frame update
         void Start()
         {
@@ -479,56 +447,11 @@ namespace VolleyballRotation
 
         private void HandlerClickedSituation(Situation sit)
         {
-            //Debug.Log($"HandlerClickedSituation({sit}) called");
-
-            //if(lastClickedSituation == sit)
-            //{
-            //    // Same was clicked, so update the current to match this value, and then update the next to match the current.
-            //    currentSituation = sit;
-            //    nextSituation = currentSituation;
-            //    nextRotation = currentRotation;
-
-            //    UpdateStatusDisplay();
-            //}
-            //else
-            //{
-            //    // This is a new value clicked, so update the next rotation to match this value.
-            //    nextSituation = sit;
-
-            //    UpdateStatusDisplay();
-            //}
-
-            //lastClickedSituation = sit;
-
             HandleClick(false, 0, true, sit);
         }
 
         private void HandlerClickedRotation(int rot)
         {
-            //Debug.Log($"HandlerClickedRotation({rot}) called");
-
-            //if(lastClickedRotation == rot)
-            //{
-            //    // Same was clicked, so update the current to match this value, and then update the next to match the current.
-            //    currentRotation = rot;
-            //    //currentSituation = Situation.ServeStack; // When we rotate, we're serving, except for the initial serve receive due to coin toss.
-            //    nextRotation = currentRotation;
-            //    nextSituation = currentSituation;
-
-            //    lastClickedSituation = currentSituation;
-
-            //    UpdateStatusDisplay();
-            //}
-            //else
-            //{
-            //    // This is a new value clicked, so update the next rotation to match this value.
-            //    nextRotation = rot;
-
-            //    UpdateStatusDisplay();
-            //}
-
-            //lastClickedRotation = rot;
-
             HandleClick(true, rot, false, Situation.None);
         }
 
@@ -555,7 +478,9 @@ namespace VolleyballRotation
                 {
                     // clicked matches next, so update the current to match this value
                     currentSituation = sit;
-                    nextRotation = currentRotation;
+                    currentRotation = nextRotation;
+
+                    nextSituation = currentSituation;
                 }
             }
 
@@ -595,8 +520,7 @@ namespace VolleyballRotation
             }
         }
         #endregion
-
     }
 
 
-    }
+}

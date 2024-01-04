@@ -389,8 +389,16 @@ MonoBehaviour:
   upwards: {x: 0, y: 1, z: 0}
   fadeDistance: 0.35
   speed: 0.5
-  tipPrefab: {fileID: 1125102575994816, guid: abccd1539dd924c9faf729c2a48d5381, type: 3}
-  segmentPrefab: {fileID: 1609189630421558, guid: 0d61da43ae7394e4abfa0cb737559af5, type: 3}
+  tipPrefabs:
+  - {fileID: 1047237291554972, guid: 54906e8377663c64384ec02c430495dd, type: 3}
+  - {fileID: 1558564487493764, guid: 6284aac27f98f4fc29ae2be01a3b047f, type: 3}
+  - {fileID: 1125102575994816, guid: abccd1539dd924c9faf729c2a48d5381, type: 3}
+  segmentPrefabs:
+  - {fileID: 1648654368789128, guid: ab82086137c07244abcfb06ec0e02ce9, type: 3}
+  - {fileID: 1121374110014508, guid: 7f941b8ee9927448f99bd0fa712bbc11, type: 3}
+  - {fileID: 1609189630421558, guid: 0d61da43ae7394e4abfa0cb737559af5, type: 3}
+  nextSelectedArrowType: 0
+  nextSelectedSegmentType: 2
 --- !u!1 &1410863584327828288
 GameObject:
   m_ObjectHideFlags: 0
@@ -502,10 +510,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b35396bcfa0ded740a06e80c91a1c0eb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  bottomLeftTextBounds: {x: 0, y: 0, z: 0}
-  topRightTextBounds: {x: 0, y: 0, z: 0}
-  bottomRightTextBounds: {x: 0, y: 0, z: 0}
-  topLeftTextBounds: {x: 0, y: 0, z: 0}
 --- !u!1 &9063309631332321280
 GameObject:
   m_ObjectHideFlags: 0

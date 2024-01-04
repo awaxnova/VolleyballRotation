@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using UnityEditor;
 using UnityEngine;
 
 namespace Arrow
@@ -8,8 +9,23 @@ namespace Arrow
     {
         [Space] [SerializeField] float fadeDistance = 0.35f;
         [SerializeField] float speed = 1f;
-        [SerializeField] GameObject tipPrefab;
-        [SerializeField] GameObject segmentPrefab;
+        [SerializeField] List<GameObject> tipPrefabs;
+        [SerializeField] List<GameObject> segmentPrefabs;
+        
+        public enum ArrowTypes { RedPoint, GreenPoint, BlueZip, None, };
+        public enum SegmentTypes { RedRect, GreenTube, BlueZip, None, };
+
+        private ArrowTypes selectedArrowType = ArrowTypes.RedPoint;
+        private SegmentTypes selectedSegmentType = SegmentTypes.RedRect;
+
+        private ArrowTypes nextSelectedArrowType = ArrowTypes.RedPoint;
+        private SegmentTypes nextSelectedSegmentType = SegmentTypes.RedRect;
+
+        // Getter for the tip prefab
+        GameObject tipPrefab => tipPrefabs[(int)selectedArrowType];
+
+        // Getter for the segment prefab
+        GameObject segmentPrefab => segmentPrefabs[(int)selectedSegmentType];
 
         Transform arrow;
 
@@ -73,8 +89,8 @@ namespace Arrow
         void UpdateSegments()
         {
             Debug.DrawLine(start, end, Color.yellow);
-
-            CheckSegments(Positions.Count - 1);
+                        
+            UpdateArrowSegment(nextSelectedSegmentType, Positions.Count - 1);
 
             for (var i = 0; i < Positions.Count - 1; i++)
             {
@@ -93,14 +109,65 @@ namespace Arrow
                 material.color = currentColor;
             }
 
-            if (!arrow)
-                arrow = Instantiate(tipPrefab, transform).transform;
-
-            arrow.localPosition = Positions.Last();
-            arrow.localRotation = Rotations.Last();
+            UpdateArrowHead(nextSelectedArrowType);
 
             transform.position = start;
             transform.rotation = Quaternion.LookRotation(end - start, upwards);
+        }
+
+        void UpdateArrowHead(ArrowTypes newArrowHeadType)
+        { 
+
+            // If the selected arrowhead matches the currently instantiated arrowhead, leave it in place,
+            if(newArrowHeadType != selectedArrowType)
+            {
+                // but if the arrow isn't the same,
+                // destroy the existing one if it exists,
+                if (arrow)
+                {
+                    Destroy(arrow.gameObject);
+                }
+
+                // choose the new arrow type
+                selectedArrowType = newArrowHeadType;
+            }
+
+            // If the arrow isn't instantiated, then instantiate it,
+            if(!arrow)
+            {
+                arrow = Instantiate(tipPrefab, transform).transform;
+            }
+
+            // and setup the new position and rotation.
+            arrow.localPosition = Positions.Last();
+            arrow.localRotation = Rotations.Last();
+        }
+
+        void UpdateArrowSegment(SegmentTypes newArrowSegmentType, int segmentsCount)
+        {
+            // If the segment is already the selected segment, then leave it in place.
+            if(newArrowSegmentType != selectedSegmentType)
+            {
+                // Otherwise,
+                // clear the existing renderers, and
+                // destroy the existing segments
+                // and clear the segments list.
+
+                renderers.Clear();
+
+                foreach (var segment in segments)
+                {
+                    Destroy(segment.gameObject);
+                }
+
+                segments.Clear();
+
+                selectedSegmentType = newArrowSegmentType;
+            }
+
+            // If the segments list is too short, then instantiate the remaining segments, and add the renderers to the renderers list.
+
+            CheckSegments(segmentsCount);
         }
 
         void CheckSegments(int segmentsCount)
@@ -133,6 +200,18 @@ namespace Arrow
         public void SetShadowMode(bool enableCastShadow)
         {
             shadowsEnabled = enableCastShadow;
+        }
+
+        public void SetArrowHeadType(ArrowTypes arrowHeadType)
+        {
+            nextSelectedArrowType = arrowHeadType;
+            UpdateArrowHead(arrowHeadType);
+        }
+
+        public void SetArrowSegmentType(SegmentTypes arrowSegmentType)
+        {
+            nextSelectedSegmentType = arrowSegmentType;
+            UpdateArrowSegment(arrowSegmentType, Positions.Count - 1);
         }
     }
 }

@@ -20,5 +20,4 @@ public class UIToggleActive : MonoBehaviour
     {       
         gameObject.SetActive(!gameObject.activeSelf);
     }
-
 }

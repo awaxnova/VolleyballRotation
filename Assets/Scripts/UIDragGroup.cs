@@ -16,6 +16,7 @@ public class UIDragGroup : MonoBehaviour, IDragHandler, IBeginDragHandler, IEndD
         canvasGroup = GetComponent<CanvasGroup>();
 
         LoadUIPosition();
+        enableReposition = false;
     }
 
 

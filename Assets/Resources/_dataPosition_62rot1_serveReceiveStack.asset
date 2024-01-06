@@ -29,6 +29,22 @@ MonoBehaviour:
   - 
   - 
   - <c=blue>M<sub>2</sub>/L
+  arrowTypes: 000000000000000000000000000000000000000000000000
+  segmentTypes: 020000000200000002000000020000000200000002000000
+  arrowHeights:
+  - 0.23
+  - 0.23
+  - 0.23
+  - 0.23
+  - 0.23
+  - 0.23
+  arrowSegmentLengths:
+  - 0.31
+  - 0.31
+  - 0.31
+  - 0.31
+  - 0.31
+  - 0.31
   positionMarkers: []
   positionMarkerPrefab: {fileID: 9063309631332321280, guid: 5ea2a9050d79d184591ca717664b96f7, type: 3}
   allowPositionOverwrite: 0

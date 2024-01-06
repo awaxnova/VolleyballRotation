@@ -38,5 +38,6 @@ namespace VolleyballRotation
     public enum Formation
     {
         F6_2,
+        None,
     }
 }

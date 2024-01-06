@@ -46,16 +46,6 @@ namespace VolleyballRotation
         public bool showPlayerMarkers = true;
 
         /// <summary>
-        /// The height of the arrow arc
-        /// </summary>
-        public float arrowHeight = 0.5f;
-
-        /// <summary>
-        /// The length of each segment of the arrow
-        /// </summary>
-        public float arrowSegmentLength = 0.1f;
-
-        /// <summary>
         /// How many second to take to transition the player positions to the new position.
         /// </summary>
         public float playerPositionTransitionDuration = 0.2f;
@@ -85,6 +75,11 @@ namespace VolleyballRotation
 
         private int lastCurrentRotation = 0;
         private Situation lastCurrentSituation = Situation.None;
+
+        private Formation lastFormation = Formation.None;
+        private Formation currentFormation = Formation.F6_2;
+
+        private FormationData currentFormationData;
 
         private void Rotate() { currentRotation = currentRotation == 6 ? 1 : Mathf.Clamp(currentRotation + 1, 1, 6); nextRotation = currentRotation; }
         private void BackRotate() { currentRotation = currentRotation == 1 ? 6 : Mathf.Clamp(currentRotation - 1, 1, 6); nextRotation = currentRotation; }
@@ -130,6 +125,12 @@ namespace VolleyballRotation
         // Update is called once per frame
         void Update()
         {
+            if(lastFormation != currentFormation)
+            {
+                // The formation changed, so we need to update the player names and the player positions.
+                UpdateNewFormation();
+            }
+
             for (int i = 0; i < rotationMarkers.Length; i++)
             {
                 rotationMarkers[i].SetActive(showRotationMarkers);
@@ -195,7 +196,24 @@ namespace VolleyballRotation
 
             lastCurrentRotation = currentRotation;
             lastCurrentSituation = currentSituation;
+            lastFormation = currentFormation;
         }
+
+        private void UpdateNewFormation()
+        {
+            // Here, we choose the Data for the currentFormation, and pull the data into a data structure, which has parts that get overridden by playerprefs, and can be adjusted by in-game player settings.
+
+            // TODO - Update the player names based on the currentFormation
+            // TODO - Update the player positions based on the currentFormation
+
+            
+            currentFormationData = new FormationData(currentFormation);
+
+            // FIXME - TODO - Override by Loading PlayerPrefs
+
+            Debug.Log($"UpdateNewFormation() {currentFormationData}");
+        }
+
 
         private void UpdatePlayerPositions(int currentRotation, Situation currentSituation)
         {
@@ -211,15 +229,15 @@ namespace VolleyballRotation
             // Find the DataPosition that matches the current situation
             // Update the player positions based on the DataPosition
 
-            DataPosition dataPosition = DataPosition.data_list.Find(x => x.situation == currentSituation && x.rotationNumber == currentRotation);
+            RotationData rotationData = currentFormationData.GetRotationData(currentSituation, currentRotation);
 
-            if (dataPosition != null)
+            if (rotationData != null)
             {
                 // Update the player positions based on the DataPosition
                 for (int i = 0; i < playerMarkers.Count; i++)
                 {
                     // Move this GameObject to the targetTransform's position over 0.4 second
-                    playerMarkers[i].transform.DOMove(dataPosition.positions[i], playerPositionTransitionDuration).SetEase(Ease.Linear)
+                    playerMarkers[i].transform.DOMove(rotationData.positions[i], playerPositionTransitionDuration).SetEase(Ease.Linear)
                         .OnComplete(() =>
                         {
                             //playerMarkers[i].transform.rotation = dataPosition.positions[i].rotation;
@@ -230,10 +248,10 @@ namespace VolleyballRotation
                     var stm = playerMarkers[i].GetComponentInChildren<SuperTextMesh>();
                     if (stm != null)
                     {
-                        if(String.IsNullOrEmpty(dataPosition.playerNamesOverrides[i]))
+                        if(String.IsNullOrEmpty(rotationData.playerNames[i]))
                             stm.text = playerNames[i];
                         else                       
-                            stm.text = dataPosition.playerNamesOverrides[i];
+                            stm.text = rotationData.playerNames[i];
                     }
 
                 }
@@ -315,9 +333,9 @@ namespace VolleyballRotation
 
         private Vector3 getNextPlayerPosition(int playerIndex)
         {
-            var found = DataPosition.data_list.Find(x => x.situation == nextSituation && x.rotationNumber == nextRotation);
+            RotationData rotationData = currentFormationData.GetRotationData(nextSituation, nextRotation);
 
-            if (found == null)
+            if (rotationData == null)
             {
                 string dataPositionString = DataPosition.data_list.Aggregate("", (current, next) => current + next.ToString() + "\n");
 
@@ -325,21 +343,21 @@ namespace VolleyballRotation
                 return new Vector3(-100f,-100f,-100f);
             }
             else
-                return found.positions[playerIndex];
+                return rotationData.positions[playerIndex];
         }
 
         private Vector3 getCurrentPlayerPosition(int playerIndex)
         {
-            var found = DataPosition.data_list.Find(x => x.situation == currentSituation && x.rotationNumber == currentRotation);
+            RotationData rotationData = currentFormationData.GetRotationData(currentSituation, currentRotation);
 
-            if (found == null)
+            if (rotationData == null)
             {
                 string dataPositionString = DataPosition.data_list.Aggregate("", (current, next) => current + next.ToString() + "\n");
                 Debug.LogWarning($"No Current DataPosition found for situation={currentSituation} and rotation={currentRotation} \n{dataPositionString}");
                 return new Vector3(-200f,-200f,-200f);                
             }
             else
-                return found.positions[playerIndex];
+                return rotationData.positions[playerIndex];
         }
 
         private int UpdatedPositionIndex(int currentRotation, int playerIndex)
@@ -404,8 +422,10 @@ namespace VolleyballRotation
 
                 if (arrowRenderer != null)
                 {
-                    arrowRenderer.SetHeight(arrowHeight);
-                    arrowRenderer.SetSegmentLength(arrowSegmentLength);
+                    arrowRenderer.SetHeight(currentFormationData.GetArrowHeight(currentSituation, currentRotation, i)); 
+                    arrowRenderer.SetSegmentLength(currentFormationData.GetArrowSegmentLength(currentSituation, currentRotation, i));
+                    arrowRenderer.SetArrowHeadType(currentFormationData.GetArrowType(currentSituation, currentRotation, i));
+                    arrowRenderer.SetArrowSegmentType(currentFormationData.GetSegmentType(currentSituation, currentRotation, i));
                 }
                 else
                 {

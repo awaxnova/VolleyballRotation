@@ -1,3 +1,4 @@
+using Arrow;
 using Sirenix.OdinInspector;
 using Sirenix.Utilities;
 using System.Collections;
@@ -10,20 +11,6 @@ namespace VolleyballRotation
 
     public class DataPosition : ScriptableObject
     {
-        /*
-        /// <summary>
-        /// The unique identifier for this formation, such as 6-2
-        /// </summary>
-        public string id;
-        
-        [Header("Text")]
-        [InfoBox("Such as a 6-2 Formation for Volleyball"), HideInTables]
-        public string title;
-
-        [TextArea(5, 7), HideInTables]
-        public string desc;
-        */
-
         public Formation formation;
 
         // corresponding to rotation Numbers 1 through 6
@@ -44,6 +31,18 @@ namespace VolleyballRotation
 
         [HideInTables]
         public string[] playerNamesOverrides = new string[6];
+
+        [HideInTables]
+        public List<AnimatedArrowRenderer.ArrowTypes> arrowTypes = new List<AnimatedArrowRenderer.ArrowTypes>();
+
+        [HideInTables]
+        public List<AnimatedArrowRenderer.SegmentTypes> segmentTypes = new List<AnimatedArrowRenderer.SegmentTypes>();
+
+        [HideInTables]
+        public List<float> arrowHeights = new List<float>();
+
+        [HideInTables]
+        public List<float> arrowSegmentLengths = new List<float>();
 
         // The placeholders for positions of the players in this rotation's situation.
         // This is indexed by the position index, 0 through 5, corresponding to players 1 through 6 in this rotation, where index 0 represents player 1, who is in the back right of rotation index 0.
@@ -192,6 +191,7 @@ namespace VolleyballRotation
         }
 
         public static List<DataPosition> data_list = new List<DataPosition>();
+
 
         public static void Load(string folder = "")
         {

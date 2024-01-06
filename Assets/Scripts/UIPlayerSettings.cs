@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
+using VolleyballRotation;
 using static Arrow.AnimatedArrowRenderer;
 
 public class UIPlayerSettings : MonoBehaviour
@@ -29,14 +30,17 @@ public class UIPlayerSettings : MonoBehaviour
     // How do we populate the dropdown with enum values?
     // https://forum.unity.com/threads/how-to-populate-a-dropdown-with-enum-values.264449/
 
+    public RotationManager rotationManager;
+
     public TMP_InputField nameInputField;
     public Dropdown arrowHeadDropdown;
     public Dropdown arrowSegmentDropdown;
     public Slider segmentLengthSlider;
     public Slider arrowHeightSlider;
 
+
     public Toggle toggleGeneral;
-    public Toggle togglePlayerDefault;
+
     public Toggle togglePlayer1;
     public Toggle togglePlayer2;
     public Toggle togglePlayer3;
@@ -51,6 +55,8 @@ public class UIPlayerSettings : MonoBehaviour
     public Toggle toggleRotation5;
     public Toggle toggleRotation6;
 
+    bool updateUI = true;
+
     void PopulateDropdownWithEnum(Dropdown dropdown, System.Type enumType)
     {
         dropdown.ClearOptions();
@@ -64,7 +70,7 @@ public class UIPlayerSettings : MonoBehaviour
     {
 
         toggleGeneral?.onValueChanged.AddListener(OnValueChangedToggleGeneral);
-        togglePlayerDefault?.onValueChanged.AddListener(OnValueChangedTogglePlayerDefault);
+
         togglePlayer1?.onValueChanged.AddListener(OnValueChangedTogglePlayer1);
         togglePlayer2?.onValueChanged.AddListener(OnValueChangedTogglePlayer2);
         togglePlayer3?.onValueChanged.AddListener(OnValueChangedTogglePlayer3);
@@ -94,9 +100,161 @@ public class UIPlayerSettings : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        CalculateUIValues();
         
     }
 
+    public void EnableUIElements(bool enable)
+    { 
+        nameInputField.gameObject.SetActive(enable);
+        arrowHeadDropdown.gameObject.SetActive(enable);
+        arrowSegmentDropdown.gameObject.SetActive(enable);
+        segmentLengthSlider.gameObject.SetActive(enable);
+        arrowHeightSlider.gameObject.SetActive(enable);
+    }
+
+    bool isRotationSelected(int rotationNumber)
+    {
+        switch(rotationNumber)
+        {
+            case 1:
+                return toggleRotation1.isOn;
+            case 2:
+                return toggleRotation2.isOn;
+            case 3:
+                return toggleRotation3.isOn;
+            case 4:
+                return toggleRotation4.isOn;
+            case 5:
+                return toggleRotation5.isOn;
+            case 6:
+                return toggleRotation6.isOn;
+            default:
+                return false;
+        }
+    }
+
+    public void CalculateUIValues() 
+    {
+        if (!updateUI)
+            return;
+
+        // Calculate the values for the UI elements, based on the selected player and rotation(s).
+
+        // Which player number is selected?
+        // If it's 0 then we're using the general settings instead of player settings.
+        int playerNumber = 0;
+        if (togglePlayer1.isOn)
+        {
+            playerNumber = 1;
+        }
+        else if (togglePlayer2.isOn)
+        {
+            playerNumber = 2;
+        }
+        else if (togglePlayer3.isOn)
+        {
+            playerNumber = 3;
+        }
+        else if (togglePlayer4.isOn)
+        {
+            playerNumber = 4;
+        }
+        else if (togglePlayer5.isOn)
+        {
+            playerNumber = 5;
+        }
+        else if (togglePlayer6.isOn)
+        {
+            playerNumber = 6;
+        }
+
+        // Which rotation numbers are selected, at least one?  If so, enable the UI elements.
+        // If not, disable the UI elements.
+        if(playerNumber > 0 && ( toggleRotation1.isOn || toggleRotation2.isOn || toggleRotation3.isOn || toggleRotation4.isOn || toggleRotation5.isOn || toggleRotation6.isOn))
+        {
+            EnableUIElements(true);
+        }
+        else
+        {
+            EnableUIElements(false);
+            return;
+        }
+
+
+        // Let's load the UI Elements with the values that are common to selected rotations.
+        // One player and at least one rotation is selected.
+
+        FormationData formationData = rotationManager.GetCurrentFormationData();
+
+        // For the selected player, diff the values for the rotations/situations.
+        // If they're all the same, display the value.
+        // If they're not all the same, display a blank.
+
+        if (formationData != null)
+        {
+
+            // Test all of the situations for the rotation number, for this player, and save off the values, but blank if they're different.
+            string name = "";
+            ArrowTypes arrowHead = ArrowTypes.None;
+            SegmentTypes arrowSegment = SegmentTypes.None;
+            float segmentLength = 0;
+            float arrowHeight = 0;
+
+            bool first = true;
+
+            // Iterate over all Situation types
+            foreach(Situation situation in System.Enum.GetValues(typeof(Situation)))
+            {
+                // Iterate over all SELECTED Rotation numbers
+                for (int rotationNumber = 1; rotationNumber <= 6; rotationNumber++)
+                {
+                    RotationData rotationData = formationData.GetRotationData(situation, rotationNumber);
+
+                    // If the rotation /situation, then compare the values.
+                    if ( isRotationSelected(rotationNumber) && (rotationData != null))
+                    {
+                        if (first)
+                        {
+                            name = formationData.GetPlayerName(situation, rotationNumber, playerNumber);
+                            arrowHead = formationData.GetArrowType(situation, rotationNumber, playerNumber);
+                            arrowSegment = formationData.GetSegmentType(situation, rotationNumber, playerNumber);
+                            segmentLength = formationData.GetArrowSegmentLength(situation, rotationNumber, playerNumber);
+                            arrowHeight = formationData.GetArrowHeight(situation, rotationNumber, playerNumber);
+                            first = false;
+                        }
+                        else
+                        {
+                            if (name != formationData.GetPlayerName(situation, rotationNumber, playerNumber))
+                            {
+                                name = "";
+                            }
+                            if (arrowHead != formationData.GetArrowType(situation, rotationNumber, playerNumber))
+                            {
+                                arrowHead = ArrowTypes.None;
+                            }
+                            if (arrowSegment != formationData.GetSegmentType(situation, rotationNumber, playerNumber))
+                            {
+                                arrowSegment = SegmentTypes.None;
+                            }
+                            if (segmentLength != formationData.GetArrowSegmentLength(situation, rotationNumber, playerNumber))
+                            {
+                                segmentLength = 0;
+                            }
+                            if (arrowHeight != formationData.GetArrowHeight(situation, rotationNumber, playerNumber))
+                            {
+                                arrowHeight = 0;
+                            }
+                        }
+                    }
+                }
+            }
+
+            UpdateUIValues(name, arrowHead, arrowSegment, segmentLength, arrowHeight);
+        }
+
+        updateUI = false;
+    }
 
     public void UpdateUIValues(string name, ArrowTypes arrowHead, SegmentTypes arrowSegment, float segmentLength, float arrowHeight)
     {
@@ -109,125 +267,84 @@ public class UIPlayerSettings : MonoBehaviour
     }
 
 
-    private void HandleToggleSelectedPlayer(int playerNumber)
+    private void HandleToggleChangedPlayer(int playerNumber, bool isSelected)
     { 
-        // Load the settings from the PlayerPrefs for the selected player.  
-        Debug.Log($"HandleToggleSelectedPlayer({playerNumber})");
+        //Debug.Log($"HandleToggleSelectedPlayer({playerNumber} {isSelected})");
+        updateUI = true;
     }
 
-    private void HandleToggleSelectedRotation(int rotationNumber)
+    private void HandleToggleChangedRotation(int rotationNumber, bool isSelected)
     {
-        // Load the settings from the PlayerPrefs for the selected rotation.  
-        Debug.Log($"HandleToggleSelectedRotation({rotationNumber})");
+        updateUI = true;
     }
+        
 
     public void OnValueChangedToggleGeneral(bool isSelected) 
-    { 
-    
-    }
-
-    public void OnValueChangedTogglePlayerDefault(bool isSelected)
     {
-    
+        updateUI = true;
     }
 
     #region OnValueChangedTogglePlayer
     public void OnValueChangedTogglePlayer1(bool isSelected)
     {
-        if(isSelected)
-        {
-            HandleToggleSelectedPlayer(1);
-        }
+        HandleToggleChangedPlayer(1, isSelected);
     }
 
     public void OnValueChangedTogglePlayer2(bool isSelected)
     {
-        if(isSelected)
-        {
-            HandleToggleSelectedPlayer(2);
-        }
+        HandleToggleChangedPlayer(2, isSelected);
     }
 
     public void OnValueChangedTogglePlayer3(bool isSelected)
     {
-        if(isSelected)
-        {
-            HandleToggleSelectedPlayer(3);
-        }
+        HandleToggleChangedPlayer(3, isSelected);
     }
 
     public void OnValueChangedTogglePlayer4(bool isSelected)
     {
-        if(isSelected)
-        {
-            HandleToggleSelectedPlayer(4);
-        }
+        HandleToggleChangedPlayer(4, isSelected);
     }
 
     public void OnValueChangedTogglePlayer5(bool isSelected)
     {
-        if(isSelected)
-        {
-            HandleToggleSelectedPlayer(5);
-        }
+        HandleToggleChangedPlayer(5, isSelected);
     }
 
     public void OnValueChangedTogglePlayer6(bool isSelected)
     {
-        if(isSelected)
-        {
-            HandleToggleSelectedPlayer(6);
-        }
+        HandleToggleChangedPlayer(6, isSelected);
     }
     #endregion
 
     #region OnValueChangedToggleRotation
     public void OnValueChangedToggleRotation1(bool isSelected)
     {
-        if(isSelected)
-        {
-            HandleToggleSelectedRotation(1);
-        }
+        HandleToggleChangedRotation(1, isSelected);
     }
 
     public void OnValueChangedToggleRotation2(bool isSelected)
     {
-        if(isSelected)
-        {
-            HandleToggleSelectedRotation(2);
-        }
+        HandleToggleChangedRotation(2, isSelected);
     }
 
     public void OnValueChangedToggleRotation3(bool isSelected)
     {
-        if(isSelected)
-        {
-            HandleToggleSelectedRotation(3);
-        }
+        HandleToggleChangedRotation(3, isSelected);
     }
 
     public void OnValueChangedToggleRotation4(bool isSelected)
     {
-        if(isSelected)
-        {
-            HandleToggleSelectedRotation(4);
-        }
+        HandleToggleChangedRotation(4, isSelected);
     }
 
     public void OnValueChangedToggleRotation5(bool isSelected)
     {
-        if(isSelected)
-        {
-            HandleToggleSelectedRotation(5);
-        }
+        HandleToggleChangedRotation(5, isSelected);
     }
 
     public void OnValueChangedToggleRotation6(bool isSelected)
     {
-        if(isSelected)
-        {
-            HandleToggleSelectedRotation(6);
-        }
+        HandleToggleChangedRotation(6, isSelected);
     }
     #endregion
 

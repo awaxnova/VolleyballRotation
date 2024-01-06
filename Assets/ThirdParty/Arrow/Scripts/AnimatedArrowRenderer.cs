@@ -138,9 +138,17 @@ namespace Arrow
                 arrow = Instantiate(tipPrefab, transform).transform;
             }
 
-            // and setup the new position and rotation.
-            arrow.localPosition = Positions.Last();
-            arrow.localRotation = Rotations.Last();
+            if(Positions.Count != 0)
+            {
+                // and setup the new position.
+                arrow.localPosition = Positions.Last();
+            }
+
+            if(Rotations.Count != 0)
+            {
+                // and setup the new rotation.
+                arrow.localRotation = Rotations.Last();
+            }
         }
 
         void UpdateArrowSegment(SegmentTypes newArrowSegmentType, int segmentsCount)

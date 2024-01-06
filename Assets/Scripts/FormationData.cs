@@ -73,32 +73,101 @@ namespace VolleyballRotation
 
         public Vector3 GetPosition(Situation situation, int rotationNumber, int positionNumber)
         {
-            return GetRotationData(situation, rotationNumber).positions[positionNumber];
+            RotationData rotData = GetRotationData(situation, rotationNumber);
+            if(rotData == null)
+            {
+                Debug.LogError("No RotationData found for Situation " + situation + " and RotationNumber " + rotationNumber);
+                return Vector3.zero;
+            }
+            if(rotData.positions.Count <= positionNumber)
+            {
+                Debug.LogError("No Position found for Situation " + situation + " and RotationNumber " + rotationNumber + " and PositionNumber " + positionNumber);
+                return Vector3.zero;
+            }   
+
+            return rotData.positions[positionNumber];
         }
 
         public string GetPlayerName(Situation situation, int rotationNumber, int positionNumber)
         {
-            return GetRotationData(situation, rotationNumber).playerNames[positionNumber];
+            RotationData rotData = GetRotationData(situation, rotationNumber);
+            if (rotData == null)
+            {
+                Debug.LogError("No RotationData found for Situation " + situation + " and RotationNumber " + rotationNumber);
+                return "";
+            }
+            if (rotData.playerNames.Count <= positionNumber)
+            {
+                Debug.LogError("No PlayerName found for Situation " + situation + " and RotationNumber " + rotationNumber + " and PositionNumber " + positionNumber);
+                return "";
+            }
+            return rotData.playerNames[positionNumber];
         }
 
         public AnimatedArrowRenderer.ArrowTypes GetArrowType(Situation situation, int rotationNumber, int positionNumber)
         {
-            return GetRotationData(situation, rotationNumber).arrowTypes[positionNumber];
+            RotationData rotData = GetRotationData(situation, rotationNumber);
+            if (rotData == null)
+            {
+                Debug.LogError("No RotationData found for Situation " + situation + " and RotationNumber " + rotationNumber);
+                return AnimatedArrowRenderer.ArrowTypes.None;
+            }
+            if (rotData.arrowTypes.Count <= positionNumber)
+            {
+                Debug.LogError("No ArrowType found for Situation " + situation + " and RotationNumber " + rotationNumber + " and PositionNumber " + positionNumber);
+                return AnimatedArrowRenderer.ArrowTypes.None;
+            }
+            return rotData.arrowTypes[positionNumber];
         }
 
         public AnimatedArrowRenderer.SegmentTypes GetSegmentType(Situation situation, int rotationNumber, int positionNumber)
         {
-            return GetRotationData(situation, rotationNumber).segmentTypes[positionNumber];
+            RotationData rotData = GetRotationData(situation, rotationNumber);
+
+            if (rotData == null)
+            {
+                Debug.LogError("No RotationData found for Situation " + situation + " and RotationNumber " + rotationNumber);
+                return AnimatedArrowRenderer.SegmentTypes.None;
+            }
+            if (rotData.segmentTypes.Count <= positionNumber)
+            {
+                Debug.LogError("No SegmentType found for Situation " + situation + " and RotationNumber " + rotationNumber + " and PositionNumber " + positionNumber);
+                return AnimatedArrowRenderer.SegmentTypes.None;
+            }
+            return rotData.segmentTypes[positionNumber];
         }
 
         public float GetArrowHeight(Situation situation, int rotationNumber, int positionNumber)
         {
-            return GetRotationData(situation, rotationNumber).arrowHeights[positionNumber];
+            RotationData rotData = GetRotationData(situation, rotationNumber);
+
+            if (rotData == null)
+            {
+                Debug.LogError("No RotationData found for Situation " + situation + " and RotationNumber " + rotationNumber);
+                return 0f;
+            }
+            if (rotData.arrowHeights.Count <= positionNumber)
+            {
+                Debug.LogError("No ArrowHeight found for Situation " + situation + " and RotationNumber " + rotationNumber + " and PositionNumber " + positionNumber);
+                return 0f;
+            }
+            return rotData.arrowHeights[positionNumber];
         }
 
         public float GetArrowSegmentLength(Situation situation, int rotationNumber, int positionNumber)
         {
-            return GetRotationData(situation, rotationNumber).arrowSegmentLengths[positionNumber];
+            RotationData rotData = GetRotationData(situation, rotationNumber);
+            if (rotData == null)
+            {
+                Debug.LogError("No RotationData found for Situation " + situation + " and RotationNumber " + rotationNumber);
+                return 0f;
+            }
+            if (rotData.arrowSegmentLengths.Count <= positionNumber)
+            {
+                Debug.LogError("No ArrowSegmentLength found for Situation " + situation + " and RotationNumber " + rotationNumber + " and PositionNumber " + positionNumber);
+                return 0f;
+            }
+            return rotData.arrowSegmentLengths[positionNumber];
         }
 
         public override string ToString()

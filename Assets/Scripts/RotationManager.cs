@@ -540,6 +540,11 @@ namespace VolleyballRotation
             }
         }
         #endregion
+
+        public FormationData GetCurrentFormationData()
+        {
+            return currentFormationData;
+        }
     }
 
 

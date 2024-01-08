@@ -2,6 +2,7 @@ using Arrow;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -104,26 +105,100 @@ public class UIPlayerSettings : MonoBehaviour
     {
         Debug.Log($"OnSubmitInputFieldName({value})");
         // Update the data structure with the new name.
+
+
+        // Use the value to update the data structure.
+        // Iterate over all of the selected rotations, and update the name of the player for each of them.
+
+        for(int rotationNumber = 1; rotationNumber <= 6; rotationNumber++)
+        {
+            if (isRotationSelected(rotationNumber))
+            {
+                foreach (Situation situation in System.Enum.GetValues(typeof(Situation)).Cast<Situation>().Where(s => s != Situation.None))
+                {
+                    // Update the name for this rotation.
+                    rotationManager.GetCurrentFormationData().SetPlayerName(situation, rotationNumber, getPlayerNumberToggleSelected(), value);
+                }
+            }
+        }
+
+        isDirtySettings = true;
     }
 
     private void OnValueChangedArrowHeadDropdown(int value)
     {
         Debug.Log($"OnValueChangedArrowHeadDropdown({(AnimatedArrowRenderer.ArrowTypes)value})");
+
+        for(int rotationNumber = 1; rotationNumber <= 6; rotationNumber++)
+        {
+            if (isRotationSelected(rotationNumber))
+            {
+                foreach (Situation situation in System.Enum.GetValues(typeof(Situation)).Cast<Situation>().Where(s => s != Situation.None))
+                {
+                    // Update the arrowHead for this rotation.
+                    rotationManager.GetCurrentFormationData().SetArrowType(situation, rotationNumber, getPlayerNumberToggleSelected(), (AnimatedArrowRenderer.ArrowTypes)value);                   
+                }
+            }
+        }
+
+        isDirtySettings = true;
     }
 
     private void OnValueChangedArrowSegmentDropdown(int value)
     {
         Debug.Log($"OnValueChangedArrowSegmentDropdown({(AnimatedArrowRenderer.SegmentTypes)value})");
+
+        for(int rotationNumber = 1; rotationNumber <= 6; rotationNumber++)
+        {
+            if (isRotationSelected(rotationNumber))
+            {
+                foreach (Situation situation in System.Enum.GetValues(typeof(Situation)).Cast<Situation>().Where(s => s != Situation.None))
+                {
+                    // Update the arrowSegment for this rotation.
+                    rotationManager.GetCurrentFormationData().SetSegmentType(situation, rotationNumber, getPlayerNumberToggleSelected(), (AnimatedArrowRenderer.SegmentTypes)value);
+                }
+            }
+        }
+
+        isDirtySettings = true;
     }
 
     private void OnValueChangedSegmentLengthSlider(float value)
     {
         Debug.Log($"OnValueChangedSegmentLengthSlider({value})");
+
+        for(int rotationNumber = 1; rotationNumber <= 6; rotationNumber++)
+        {
+            if (isRotationSelected(rotationNumber))
+            {
+                foreach (Situation situation in System.Enum.GetValues(typeof(Situation)).Cast<Situation>().Where(s => s != Situation.None))
+                {
+                    // Update the segmentLength for this rotation.
+                    rotationManager.GetCurrentFormationData().SetArrowSegmentLength(situation, rotationNumber, getPlayerNumberToggleSelected(), value);
+                }
+            }
+        }
+
+        isDirtySettings = true;
     }
 
     private void OnValueChangedArrowHeightSlider(float value)
     {
         Debug.Log($"OnValueChangedArrowHeightSlider({value})");
+
+        for(int rotationNumber = 1; rotationNumber <= 6; rotationNumber++)
+        {
+            if (isRotationSelected(rotationNumber))
+            {
+                foreach (Situation situation in System.Enum.GetValues(typeof(Situation)).Cast<Situation>().Where(s => s != Situation.None))
+                {
+                    // Update the arrowHeight for this rotation.
+                    rotationManager.GetCurrentFormationData().SetArrowHeight(situation, rotationNumber, getPlayerNumberToggleSelected(), value);
+                }
+            }
+        }
+
+        isDirtySettings = true;
     }
 
     // Update is called once per frame
@@ -372,4 +447,40 @@ public class UIPlayerSettings : MonoBehaviour
     }
     #endregion
 
+    bool enteringSettingsMenu = false;
+    bool isDirtySettings = false;
+
+    /// <summary>
+    /// This should save/commit any changes to the next snapshot.
+    /// </summary>
+    public void OnClickedButtonSettings()
+    {
+        enteringSettingsMenu = !enteringSettingsMenu;
+
+        string buttonText = enteringSettingsMenu ? "ENTERING SETTINGS" : "EXITING SETTINGS";
+        Debug.Log($"OnClickedButtonSettings() {enteringSettingsMenu}");
+
+        // if we're entering the settings menu, then take a snapshot of the formation data.
+        if (enteringSettingsMenu)
+        {
+            Debug.Log($"OnClickedButtonSettings() TAKING SNAPSHOT");
+            rotationManager.GetCurrentFormationData().Snapshot();
+        }
+        else if (isDirtySettings)
+        {
+            // if we're exiting the settings menu, and the settings are dirty, then save the formation data.
+            Debug.Log($"OnClickedButtonSettings() SAVING SETTINGS");
+            rotationManager.GetCurrentFormationData().Save(forceSave: false);
+            isDirtySettings = false;
+        }
+    }
+
+    /// <summary>
+    /// This should revert any settings before exiting via the settings button.
+    /// </summary>
+    public void OnClickedButtonRevertSettings() 
+    {
+        Debug.Log($"OnClickedButtonRevertSettings() REVERTING SETTINGS");
+        rotationManager.GetCurrentFormationData().Revert();
+    }
 }

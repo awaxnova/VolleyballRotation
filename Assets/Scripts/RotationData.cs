@@ -22,6 +22,9 @@ namespace VolleyballRotation
         public List<float> arrowHeights;
         public List<float> arrowSegmentLengths;
 
+        [System.NonSerialized]
+        private string jsonSnapshot;
+
         public RotationData(DataPosition dpos)
         {
             // Capture the dpos situation, rotationNumber, playernames, and positions
@@ -66,6 +69,9 @@ namespace VolleyballRotation
             {
                 arrowSegmentLengths.Add(dpos.arrowSegmentLengths[i]);
             }
+
+            // Upon creation, capture a snapshot of this RotationData
+            SnapshotRotationData();
         }
 
         // Save RotationData to PlayerPrefs
@@ -82,6 +88,34 @@ namespace VolleyballRotation
             return Load(key);
         }
 
+        /// <summary>
+        /// Capture a snapshot of this RotationData
+        /// </summary>
+        /// <returns></returns>
+        public string SnapshotRotationData() { 
+            jsonSnapshot = JsonUtility.ToJson(this);
+            return jsonSnapshot;
+        }
+
+        /// <summary>
+        /// Compare RotationData to a snapshot
+        /// </summary>
+        /// <returns></returns>
+        public bool isDifferentFromSnapshot()
+        {
+            string json = JsonUtility.ToJson(this);
+            return json != jsonSnapshot;
+        }
+
+        /// <summary>
+        /// Overwrite this RotationData with the values from a snapshot
+        /// </summary>
+        /// <param name="json"></param>
+        public void PopulateFromSnapshot()
+        {
+            JsonUtility.FromJsonOverwrite(jsonSnapshot, this);
+        }
+
         // Save RotationData to PlayerPrefs with a custom key
         private void Save(string key)
         {
@@ -91,6 +125,9 @@ namespace VolleyballRotation
             // Save JSON string to PlayerPrefs
             PlayerPrefs.SetString(key, json);
             PlayerPrefs.Save();
+
+            // Set a new snapshot to represent what's saved.
+            SnapshotRotationData();
         }
 
         // Load RotationData from PlayerPrefs with a custom key
@@ -106,7 +143,8 @@ namespace VolleyballRotation
             }
 
             // Convert JSON string to RotationData object
-            RotationData rotationData = JsonUtility.FromJson<RotationData>(json);
+            RotationData rotationData = JsonUtility.FromJson<RotationData>(json);            
+            rotationData.SnapshotRotationData();
             return rotationData;
         }
 

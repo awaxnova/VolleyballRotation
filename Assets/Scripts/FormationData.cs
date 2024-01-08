@@ -1,4 +1,5 @@
 using Arrow;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -56,14 +57,37 @@ namespace VolleyballRotation
             }
         }
 
-        // Save an entire formation to PlayerPrefs.
-        public void Save()
+        /// <summary>
+        /// Save an entire formation to PlayerPrefs.
+        /// </summary>
+        /// <param name="forceSave"></param>
+        public void Save(bool forceSave = false)
         {
             for (int i = 0; i < rotationData.Count; i++)
             {
-                rotationData[i].Save();
+                if(rotationData[i].isDifferentFromSnapshot() || forceSave)
+                    rotationData[i].Save();
             }
         }
+
+        public void Snapshot()
+        {
+            for (int i = 0; i < rotationData.Count; i++)
+            {
+                rotationData[i].SnapshotRotationData();
+            }
+        }
+
+        public void Revert()
+        {
+            for (int i = 0; i < rotationData.Count; i++)
+            {
+                if (rotationData[i].isDifferentFromSnapshot())
+                    rotationData[i].PopulateFromSnapshot();
+            }
+        }
+
+        
 
         public RotationData GetRotationData(Situation situation, int rotationNumber)
         {
@@ -104,6 +128,23 @@ namespace VolleyballRotation
             return rotData.playerNames[positionNumber-1];
         }
 
+        public void SetPlayerName(Situation situation, int rotationNumber, int playerNumber, string value)
+        {
+            RotationData rotData = GetRotationData(situation, rotationNumber);
+
+            if (rotData == null)
+            {
+                Debug.LogError("No RotationData found for Situation " + situation + " and RotationNumber " + rotationNumber);
+                return;
+            }
+            if (rotData.playerNames.Count < playerNumber)
+            {
+                Debug.LogError("No PlayerName found for Situation " + situation + " and RotationNumber " + rotationNumber + " and PositionNumber " + playerNumber);
+                return;
+            }
+            rotData.playerNames[playerNumber - 1] = value;
+        }
+
         public AnimatedArrowRenderer.ArrowTypes GetArrowType(Situation situation, int rotationNumber, int positionNumber)
         {
             RotationData rotData = GetRotationData(situation, rotationNumber);
@@ -118,6 +159,23 @@ namespace VolleyballRotation
                 return AnimatedArrowRenderer.ArrowTypes.RedPoint;
             }
             return rotData.arrowTypes[positionNumber - 1];
+        }
+
+        public void SetArrowType(Situation situation, int rotationNumber, int v, AnimatedArrowRenderer.ArrowTypes value)
+        {
+            RotationData rotData = GetRotationData(situation, rotationNumber);
+
+            if (rotData == null)
+            {
+                Debug.LogError("No RotationData found for Situation " + situation + " and RotationNumber " + rotationNumber);
+                return;
+            }
+            if (rotData.arrowTypes.Count < v)
+            {
+                Debug.LogError("No ArrowType found for Situation " + situation + " and RotationNumber " + rotationNumber + " and PositionNumber " + v);
+                return;
+            }
+            rotData.arrowTypes[v - 1] = value;
         }
 
         public AnimatedArrowRenderer.SegmentTypes GetSegmentType(Situation situation, int rotationNumber, int positionNumber)
@@ -135,6 +193,24 @@ namespace VolleyballRotation
                 return AnimatedArrowRenderer.SegmentTypes.BlueZip;
             }
             return rotData.segmentTypes[positionNumber - 1];
+        }
+
+        public void SetSegmentType(Situation situation, int rotationNumber, int v, AnimatedArrowRenderer.SegmentTypes value)
+        {
+            
+            RotationData rotData = GetRotationData(situation, rotationNumber);
+
+            if (rotData == null)
+            {
+                Debug.LogError("No RotationData found for Situation " + situation + " and RotationNumber " + rotationNumber);
+                return;
+            }
+            if (rotData.segmentTypes.Count < v)
+            {
+                Debug.LogError("No SegmentType found for Situation " + situation + " and RotationNumber " + rotationNumber + " and PositionNumber " + v);
+                return;
+            }
+            rotData.segmentTypes[v - 1] = value;
         }
 
         public float GetArrowHeight(Situation situation, int rotationNumber, int positionNumber)
@@ -155,6 +231,23 @@ namespace VolleyballRotation
             return rotData.arrowHeights[positionNumber - 1];
         }
 
+        public void SetArrowHeight(Situation situation, int rotationNumber, int v, float value)
+        {           
+            RotationData rotData = GetRotationData(situation, rotationNumber);
+
+            if (rotData == null)
+            {
+                Debug.LogError("No RotationData found for Situation " + situation + " and RotationNumber " + rotationNumber);
+                return;
+            }
+            if (rotData.arrowHeights.Count < v)
+            {
+                Debug.LogError("No ArrowHeight found for Situation " + situation + " and RotationNumber " + rotationNumber + " and PositionNumber " + v);
+                return;
+            }
+            rotData.arrowHeights[v - 1] = value;
+        }
+
         public float GetArrowSegmentLength(Situation situation, int rotationNumber, int positionNumber)
         {
             RotationData rotData = GetRotationData(situation, rotationNumber);
@@ -170,6 +263,25 @@ namespace VolleyballRotation
             }
             return rotData.arrowSegmentLengths[positionNumber - 1];
         }
+
+        public void SetArrowSegmentLength(Situation situation, int rotationNumber, int v, float value)
+        {           
+            RotationData rotData = GetRotationData(situation, rotationNumber);
+
+            if (rotData == null)
+            {
+                Debug.LogError("No RotationData found for Situation " + situation + " and RotationNumber " + rotationNumber);
+                return;
+            }
+            if (rotData.arrowSegmentLengths.Count < v)
+            {
+                Debug.LogError("No ArrowSegmentLength found for Situation " + situation + " and RotationNumber " + rotationNumber + " and PositionNumber " + v);
+                return;
+            }
+            rotData.arrowSegmentLengths[v - 1] = value;
+        }
+
+
         #endregion
 
         public override string ToString()
@@ -185,6 +297,8 @@ namespace VolleyballRotation
             }
             return s;
         }
+
+
     }
 
 }

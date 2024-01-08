@@ -419,13 +419,13 @@ namespace VolleyballRotation
             for (int i = 0; i < playerMarkers.Count; i++)
             {
                 AnimatedArrowRenderer arrowRenderer = playerMarkers[i].GetComponentInChildren<AnimatedArrowRenderer>();
-
+                int playerNumber = i + 1;
                 if (arrowRenderer != null)
                 {
-                    arrowRenderer.SetHeight(currentFormationData.GetArrowHeight(currentSituation, currentRotation, i)); 
-                    arrowRenderer.SetSegmentLength(currentFormationData.GetArrowSegmentLength(currentSituation, currentRotation, i));
-                    arrowRenderer.SetArrowHeadType(currentFormationData.GetArrowType(currentSituation, currentRotation, i));
-                    arrowRenderer.SetArrowSegmentType(currentFormationData.GetSegmentType(currentSituation, currentRotation, i));
+                    arrowRenderer.SetHeight(currentFormationData.GetArrowHeight(currentSituation, currentRotation, playerNumber)); 
+                    arrowRenderer.SetSegmentLength(currentFormationData.GetArrowSegmentLength(currentSituation, currentRotation, playerNumber));
+                    arrowRenderer.SetArrowHeadType(currentFormationData.GetArrowType(currentSituation, currentRotation, playerNumber));
+                    arrowRenderer.SetArrowSegmentType(currentFormationData.GetSegmentType(currentSituation, currentRotation, playerNumber));
                 }
                 else
                 {

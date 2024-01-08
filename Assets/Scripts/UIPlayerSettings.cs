@@ -1,3 +1,5 @@
+using Arrow;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using TMPro;
@@ -38,23 +40,15 @@ public class UIPlayerSettings : MonoBehaviour
     public Slider segmentLengthSlider;
     public Slider arrowHeightSlider;
 
-
+    [Header("Toggles for choosing the General Settings panel of options")]
     public Toggle toggleGeneral;
 
-    public Toggle togglePlayer1;
-    public Toggle togglePlayer2;
-    public Toggle togglePlayer3;
-    public Toggle togglePlayer4;
-    public Toggle togglePlayer5;
-    public Toggle togglePlayer6;
+    [Header("Toggles for which player is selected - a maximum of one selected at a time.")]
+    public Toggle[] togglePlayers = new Toggle[6];
 
-    public Toggle toggleRotation1;
-    public Toggle toggleRotation2;
-    public Toggle toggleRotation3;
-    public Toggle toggleRotation4;
-    public Toggle toggleRotation5;
-    public Toggle toggleRotation6;
-
+    [Header("Toggles for which rotations in this formation will be affected by the settings")]
+    public Toggle[] toggleRotations = new Toggle[6];
+          
     bool updateUI = true;
 
     void PopulateDropdownWithEnum(Dropdown dropdown, System.Type enumType)
@@ -71,19 +65,19 @@ public class UIPlayerSettings : MonoBehaviour
 
         toggleGeneral?.onValueChanged.AddListener(OnValueChangedToggleGeneral);
 
-        togglePlayer1?.onValueChanged.AddListener(OnValueChangedTogglePlayer1);
-        togglePlayer2?.onValueChanged.AddListener(OnValueChangedTogglePlayer2);
-        togglePlayer3?.onValueChanged.AddListener(OnValueChangedTogglePlayer3);
-        togglePlayer4?.onValueChanged.AddListener(OnValueChangedTogglePlayer4);
-        togglePlayer5?.onValueChanged.AddListener(OnValueChangedTogglePlayer5);
-        togglePlayer6?.onValueChanged.AddListener(OnValueChangedTogglePlayer6);
+        togglePlayers[0]?.onValueChanged.AddListener(OnValueChangedTogglePlayer1);
+        togglePlayers[1]?.onValueChanged.AddListener(OnValueChangedTogglePlayer2);
+        togglePlayers[2]?.onValueChanged.AddListener(OnValueChangedTogglePlayer3);
+        togglePlayers[3]?.onValueChanged.AddListener(OnValueChangedTogglePlayer4);
+        togglePlayers[4]?.onValueChanged.AddListener(OnValueChangedTogglePlayer5);
+        togglePlayers[5]?.onValueChanged.AddListener(OnValueChangedTogglePlayer6);
 
-        toggleRotation1?.onValueChanged.AddListener(OnValueChangedToggleRotation1);
-        toggleRotation2?.onValueChanged.AddListener(OnValueChangedToggleRotation2);
-        toggleRotation3?.onValueChanged.AddListener(OnValueChangedToggleRotation3);
-        toggleRotation4?.onValueChanged.AddListener(OnValueChangedToggleRotation4);
-        toggleRotation5?.onValueChanged.AddListener(OnValueChangedToggleRotation5);
-        toggleRotation6?.onValueChanged.AddListener(OnValueChangedToggleRotation6);
+        toggleRotations[0]?.onValueChanged.AddListener(OnValueChangedToggleRotation1);
+        toggleRotations[1]?.onValueChanged.AddListener(OnValueChangedToggleRotation2);
+        toggleRotations[2]?.onValueChanged.AddListener(OnValueChangedToggleRotation3);
+        toggleRotations[3]?.onValueChanged.AddListener(OnValueChangedToggleRotation4);
+        toggleRotations[4]?.onValueChanged.AddListener(OnValueChangedToggleRotation5);
+        toggleRotations[5]?.onValueChanged.AddListener(OnValueChangedToggleRotation6);
 
         nameInputField.onEndEdit.AddListener((string name) => { Debug.Log($"nameInputField.onEndEdit({name})"); });
         arrowHeadDropdown.onValueChanged.AddListener((int arrowHead) => { Debug.Log($"arrowHeadDropdown.onValueChanged({arrowHead})"); });
@@ -95,6 +89,41 @@ public class UIPlayerSettings : MonoBehaviour
 
         PopulateDropdownWithEnum(arrowHeadDropdown, typeof(ArrowTypes));
         PopulateDropdownWithEnum(arrowSegmentDropdown, typeof(SegmentTypes));
+
+        nameInputField.onSubmit.AddListener(OnSubmitInputFieldName); 
+        arrowHeadDropdown.onValueChanged.AddListener(OnValueChangedArrowHeadDropdown);
+        arrowSegmentDropdown.onValueChanged.AddListener(OnValueChangedArrowSegmentDropdown);
+        segmentLengthSlider.onValueChanged.AddListener(OnValueChangedSegmentLengthSlider);
+        arrowHeightSlider.onValueChanged.AddListener(OnValueChangedArrowHeightSlider);
+
+        // prevent interpretation of rich text tags.
+        nameInputField.richText = false;
+    }
+
+    private void OnSubmitInputFieldName(string value)
+    {
+        Debug.Log($"OnSubmitInputFieldName({value})");
+        // Update the data structure with the new name.
+    }
+
+    private void OnValueChangedArrowHeadDropdown(int value)
+    {
+        Debug.Log($"OnValueChangedArrowHeadDropdown({(AnimatedArrowRenderer.ArrowTypes)value})");
+    }
+
+    private void OnValueChangedArrowSegmentDropdown(int value)
+    {
+        Debug.Log($"OnValueChangedArrowSegmentDropdown({(AnimatedArrowRenderer.SegmentTypes)value})");
+    }
+
+    private void OnValueChangedSegmentLengthSlider(float value)
+    {
+        Debug.Log($"OnValueChangedSegmentLengthSlider({value})");
+    }
+
+    private void OnValueChangedArrowHeightSlider(float value)
+    {
+        Debug.Log($"OnValueChangedArrowHeightSlider({value})");
     }
 
     // Update is called once per frame
@@ -113,25 +142,44 @@ public class UIPlayerSettings : MonoBehaviour
         arrowHeightSlider.gameObject.SetActive(enable);
     }
 
+    // Check if  particular rotation number is ON.
     bool isRotationSelected(int rotationNumber)
     {
-        switch(rotationNumber)
+        if (toggleRotations[rotationNumber-1].isOn)
         {
-            case 1:
-                return toggleRotation1.isOn;
-            case 2:
-                return toggleRotation2.isOn;
-            case 3:
-                return toggleRotation3.isOn;
-            case 4:
-                return toggleRotation4.isOn;
-            case 5:
-                return toggleRotation5.isOn;
-            case 6:
-                return toggleRotation6.isOn;
-            default:
-                return false;
+            return true;
         }
+        else
+        {
+            return false;
+        }
+    }
+
+    int getPlayerNumberToggleSelected()
+    {
+        for(int indexer=0; indexer < togglePlayers.Length; indexer++)
+        {
+            if (togglePlayers[indexer].isOn)
+            {
+                return indexer + 1;
+            }
+        }
+
+        return 0;
+    }
+
+    int getQuantityRotationTogglesSelected()
+    {
+        int count = 0;
+        for (int indexer = 0; indexer < toggleRotations.Length; indexer++)
+        {
+            if (toggleRotations[indexer].isOn)
+            {
+                count++;
+            }
+        }
+
+        return count;
     }
 
     public void CalculateUIValues() 
@@ -143,35 +191,11 @@ public class UIPlayerSettings : MonoBehaviour
 
         // Which player number is selected?
         // If it's 0 then we're using the general settings instead of player settings.
-        int playerNumber = 0;
-        if (togglePlayer1.isOn)
-        {
-            playerNumber = 1;
-        }
-        else if (togglePlayer2.isOn)
-        {
-            playerNumber = 2;
-        }
-        else if (togglePlayer3.isOn)
-        {
-            playerNumber = 3;
-        }
-        else if (togglePlayer4.isOn)
-        {
-            playerNumber = 4;
-        }
-        else if (togglePlayer5.isOn)
-        {
-            playerNumber = 5;
-        }
-        else if (togglePlayer6.isOn)
-        {
-            playerNumber = 6;
-        }
+        int playerNumber = getPlayerNumberToggleSelected();
 
         // Which rotation numbers are selected, at least one?  If so, enable the UI elements.
         // If not, disable the UI elements.
-        if(playerNumber > 0 && ( toggleRotation1.isOn || toggleRotation2.isOn || toggleRotation3.isOn || toggleRotation4.isOn || toggleRotation5.isOn || toggleRotation6.isOn))
+        if((playerNumber > 0) && (getQuantityRotationTogglesSelected() > 0))
         {
             EnableUIElements(true);
         }

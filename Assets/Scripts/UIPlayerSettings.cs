@@ -1,4 +1,5 @@
 using Arrow;
+using Sirenix.OdinInspector;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -35,11 +36,15 @@ public class UIPlayerSettings : MonoBehaviour
 
     public RotationManager rotationManager;
 
-    public TMP_InputField nameInputField;
+    public InputField nameInputField;
     public Dropdown arrowHeadDropdown;
     public Dropdown arrowSegmentDropdown;
     public Slider segmentLengthSlider;
     public Slider arrowHeightSlider;
+    public FlexibleColorPicker arrowHeadColorPicker;
+    public FlexibleColorPicker arrowSegmentColorPicker;
+    public FlexibleColorPicker courtFrontColorPicker;
+    public FlexibleColorPicker courtBackColorPicker;
 
     [Header("Toggles for choosing the General Settings panel of options")]
     public Toggle toggleGeneral;
@@ -59,6 +64,66 @@ public class UIPlayerSettings : MonoBehaviour
         dropdown.AddOptions(enumNames);
     }
 
+    [Header("This is the Gameobject that makes up the court floor, which has two materials, [0] is for the back court, and [1] is for the front court.")]
+    public GameObject courtFloor;
+
+    [Button("Color Court Test 1")]
+    private void OnConnectedToServer()
+    {
+        SetCourtColors(Color.black, Color.gray);
+    }
+
+    public void SetFrontCourtColor(Color color)
+    {
+        Debug.Log($"SetFrontCourtColor({color})");
+        
+        // Set the Color for the front court color in material 1.
+
+        // Get the materials from the court floor.
+        Material[] materials = courtFloor.GetComponent<MeshRenderer>().sharedMaterials;
+
+        // Set the Albedo for the front court color in material 1.
+        materials[1].SetColor("_Color", color);
+
+        rotationManager.GetCurrentFormationData().frontCourtColor = color;
+    }
+
+    
+    public void SetBackCourtColor(Color color)
+    {
+
+        Debug.Log($"SetBackCourtColor({color})");
+
+        // Set the Color  for the back court color in material 0.
+
+        // Get the materials from the court floor.
+        Material[] materials = courtFloor.GetComponent<MeshRenderer>().sharedMaterials;
+
+        // Set the Albedo for the back court color in material 0.
+        materials[0].SetColor("_Color", color);
+
+        rotationManager.GetCurrentFormationData().backCourtColor = color;
+    }
+
+    private void SetCourtColors(Color frontCourtColor, Color backCourtColor)
+    {
+        SetFrontCourtColor(frontCourtColor);
+        SetBackCourtColor(backCourtColor);
+    }
+
+    private void LoadCourtColors()
+    {
+        Debug.Log($"LoadCourtColors()");
+
+        Material[] materials = courtFloor.GetComponent<MeshRenderer>().sharedMaterials;
+
+        courtFrontColorPicker.color = materials[1].GetColor("_Color");
+        courtBackColorPicker.color = materials[0].GetColor("_Color");
+    }
+
+    private void OnEnable()
+    {
+    }
 
     // Start is called before the first frame update
     void Start()
@@ -97,8 +162,60 @@ public class UIPlayerSettings : MonoBehaviour
         segmentLengthSlider.onValueChanged.AddListener(OnValueChangedSegmentLengthSlider);
         arrowHeightSlider.onValueChanged.AddListener(OnValueChangedArrowHeightSlider);
 
+        arrowHeadColorPicker.onColorChanged.AddListener(OnColorChangedArrowHeadColorPicker);
+        arrowSegmentColorPicker.onColorChanged.AddListener(OnColorChangedArrowSegmentColorPicker);
+
+        LoadCourtColors();        
+        courtBackColorPicker.onColorChanged.AddListener(SetBackCourtColor);
+        courtFrontColorPicker.onColorChanged.AddListener(SetFrontCourtColor);
+
         // prevent interpretation of rich text tags.
-        nameInputField.richText = false;
+        //nameInputField.richText = false;
+
+    }
+
+    private void OnColorChangedArrowHeadColorPicker(Color color)
+    {
+        Debug.Log($"OnColorChangedColorPicker({color})");
+
+        // Set the color of the dropdown to the color of the arrowHead.
+        arrowHeadDropdown.GetComponent<Image>().color = color;
+
+        for(int rotationNumber = 1; rotationNumber <= 6; rotationNumber++)
+        {
+            if (isRotationSelected(rotationNumber))
+            {
+                foreach (Situation situation in System.Enum.GetValues(typeof(Situation)).Cast<Situation>().Where(s => s != Situation.None))
+                {
+                    // Update the arrowHeadColor for this rotation.
+                    rotationManager.GetCurrentFormationData().SetArrowHeadColor(situation, rotationNumber, getPlayerNumberToggleSelected(), color);
+                }
+            }
+        }
+
+        isDirtySettings = true;
+    }
+
+    private void OnColorChangedArrowSegmentColorPicker(Color color)
+    {
+        Debug.Log($"OnColorChangedColorPicker({color})");
+
+        // Set the color of the dropdown to the color of the arrowSegment.
+        arrowSegmentDropdown.GetComponent<Image>().color = color;
+
+        for(int rotationNumber = 1; rotationNumber <= 6; rotationNumber++)
+        {
+            if (isRotationSelected(rotationNumber))
+            {
+                foreach (Situation situation in System.Enum.GetValues(typeof(Situation)).Cast<Situation>().Where(s => s != Situation.None))
+                {
+                    // Update the arrowSegmentColor for this rotation.
+                    rotationManager.GetCurrentFormationData().SetArrowSegmentColor(situation, rotationNumber, getPlayerNumberToggleSelected(), color);
+                }
+            }
+        }
+
+        isDirtySettings = true;
     }
 
     private void OnSubmitInputFieldName(string value)
@@ -215,6 +332,8 @@ public class UIPlayerSettings : MonoBehaviour
         arrowSegmentDropdown.gameObject.SetActive(enable);
         segmentLengthSlider.gameObject.SetActive(enable);
         arrowHeightSlider.gameObject.SetActive(enable);
+        arrowHeadColorPicker.gameObject.SetActive(enable);
+        arrowSegmentColorPicker.gameObject.SetActive(enable);
     }
 
     // Check if  particular rotation number is ON.
@@ -299,11 +418,13 @@ public class UIPlayerSettings : MonoBehaviour
             SegmentTypes arrowSegment = SegmentTypes.None;
             float segmentLength = 0;
             float arrowHeight = 0;
+            Color arrowHeadColor = Color.black;
+            Color arrowSegmentColor = Color.black;
 
             bool first = true;
 
-            // Iterate over all Situation types
-            foreach(Situation situation in System.Enum.GetValues(typeof(Situation)))
+            // Iterate over all Situation types, where the situation is not None.
+            foreach(Situation situation in System.Enum.GetValues(typeof(Situation)).Cast<Situation>().Where(s => s != Situation.None))
             {
                 // Iterate over all SELECTED Rotation numbers
                 for (int rotationNumber = 1; rotationNumber <= 6; rotationNumber++)
@@ -320,6 +441,9 @@ public class UIPlayerSettings : MonoBehaviour
                             arrowSegment = formationData.GetSegmentType(situation, rotationNumber, playerNumber);
                             segmentLength = formationData.GetArrowSegmentLength(situation, rotationNumber, playerNumber);
                             arrowHeight = formationData.GetArrowHeight(situation, rotationNumber, playerNumber);
+                            arrowHeadColor = formationData.GetArrowHeadColor(situation, rotationNumber, playerNumber);
+                            arrowSegmentColor = formationData.GetArrowSegmentColor(situation, rotationNumber, playerNumber);
+
                             first = false;
                         }
                         else
@@ -344,25 +468,34 @@ public class UIPlayerSettings : MonoBehaviour
                             {
                                 arrowHeight = 0;
                             }
+                            if( arrowHeadColor != formationData.GetArrowHeadColor(situation, rotationNumber, playerNumber))
+                            {
+                                arrowHeadColor = Color.red;
+                            }
+                            if (arrowSegmentColor != formationData.GetArrowSegmentColor(situation, rotationNumber, playerNumber))
+                            {
+                                arrowSegmentColor = Color.blue;
+                            }
                         }
                     }
                 }
             }
 
-            UpdateUIValues(name, arrowHead, arrowSegment, segmentLength, arrowHeight);
+            UpdateUIValues(name, arrowHead, arrowSegment, segmentLength, arrowHeight, arrowHeadColor, arrowSegmentColor);
         }
 
         updateUI = false;
     }
 
-    public void UpdateUIValues(string name, ArrowTypes arrowHead, SegmentTypes arrowSegment, float segmentLength, float arrowHeight)
+    public void UpdateUIValues(string name, ArrowTypes arrowHead, SegmentTypes arrowSegment, float segmentLength, float arrowHeight, Color arrowHeadColor, Color arrowSegmentColor)
     {
 
         nameInputField.text = name;
         arrowHeadDropdown.value = (int)arrowHead;
         arrowSegmentDropdown.value = (int)arrowSegment;
         segmentLengthSlider.value = segmentLength;
-        arrowHeightSlider.value = arrowHeight;        
+        arrowHeightSlider.value = arrowHeight;
+        arrowHeadColorPicker.color = arrowHeadColor;
     }
 
 
@@ -482,5 +615,6 @@ public class UIPlayerSettings : MonoBehaviour
     {
         Debug.Log($"OnClickedButtonRevertSettings() REVERTING SETTINGS");
         rotationManager.GetCurrentFormationData().Revert();
+        isDirtySettings = false;
     }
 }

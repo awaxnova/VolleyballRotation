@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using UnityEditor;
 using UnityEngine;
@@ -22,10 +23,10 @@ namespace Arrow
         private SegmentTypes nextSelectedSegmentType = SegmentTypes.RedRect;
 
         // Getter for the tip prefab
-        GameObject tipPrefab => tipPrefabs[(int)selectedArrowType];
+        GameObject tipPrefab => (tipPrefabs.Count > (int) selectedArrowType) ? tipPrefabs[(int)selectedArrowType] : null;
 
         // Getter for the segment prefab
-        GameObject segmentPrefab => segmentPrefabs[(int)selectedSegmentType];
+        GameObject segmentPrefab => (segmentPrefabs.Count > (int) selectedSegmentType) ? segmentPrefabs[(int)selectedSegmentType] : null;
 
         Transform arrow;
 
@@ -94,6 +95,11 @@ namespace Arrow
 
             for (var i = 0; i < Positions.Count - 1; i++)
             {
+                if(segments.Count <= i)
+                {
+                    break;
+                }
+
                 segments[i].localPosition = Positions[i];
                 segments[i].localRotation = Rotations[i];
 
@@ -132,22 +138,25 @@ namespace Arrow
                 selectedArrowType = newArrowHeadType;
             }
 
-            // If the arrow isn't instantiated, then instantiate it,
-            if(!arrow)
-            {
-                arrow = Instantiate(tipPrefab, transform).transform;
-            }
+            if (selectedArrowType != ArrowTypes.None)
+            { 
+                // If the arrow isn't instantiated, then instantiate it,
+                if(!arrow)
+                {
+                        arrow = Instantiate(tipPrefab, transform).transform;
+                }
 
-            if(Positions.Count != 0)
-            {
-                // and setup the new position.
-                arrow.localPosition = Positions.Last();
-            }
+                if(Positions.Count != 0)
+                {
+                    // and setup the new position.
+                    arrow.localPosition = Positions.Last();
+                }
 
-            if(Rotations.Count != 0)
-            {
-                // and setup the new rotation.
-                arrow.localRotation = Rotations.Last();
+                if(Rotations.Count != 0)
+                {
+                    // and setup the new rotation.
+                    arrow.localRotation = Rotations.Last();
+                }
             }
         }
 
@@ -180,6 +189,11 @@ namespace Arrow
 
         void CheckSegments(int segmentsCount)
         {
+            if(selectedSegmentType == SegmentTypes.None)
+            {
+                return;
+            }
+
             while (segments.Count < segmentsCount)
             {
                 var segment = Instantiate(segmentPrefab, transform).transform;
@@ -220,6 +234,22 @@ namespace Arrow
         {
             nextSelectedSegmentType = arrowSegmentType;
             UpdateArrowSegment(arrowSegmentType, Positions.Count - 1);
+        }
+
+        internal void SetArrowHeadColor(Color arrowHeadColor)
+        {
+            if(arrow)
+            {
+                arrow.GetComponent<MeshRenderer>().material.color = arrowHeadColor;
+            }
+        }
+
+        internal void SetArrowSegmentColor(Color arrowSegmentColor)
+        {
+            foreach (var segment in segments)
+            {
+                segment.GetComponent<MeshRenderer>().material.color = arrowSegmentColor;
+            }
         }
     }
 }

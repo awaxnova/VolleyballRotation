@@ -272,6 +272,8 @@ namespace VolleyballRotation
                 FaceCamera(stm.gameObject,true);
             }
         }
+        //public Color arrowHeadColor = Color.magenta;
+        //public Color arrowSegmentColor = Color.black;
 
         private void UpdateNextPositionArrows(int currentRotation, Situation currentSituation, int nextRotation, Situation nextSituation)
         {
@@ -298,6 +300,12 @@ namespace VolleyballRotation
                             arrowRenderer.enabled = true;
                             arrowRenderer.TurnOnArrow();
                             arrowRenderer.SetPositions(currPos, nextPos);
+
+                            Color arrowHeadColor = currentFormationData.GetArrowHeadColor(currentSituation, currentRotation, playerIndex + 1);
+                            Color arrowSegmentColor = currentFormationData.GetArrowSegmentColor(currentSituation, currentRotation, playerIndex + 1);
+
+                            arrowRenderer.SetArrowHeadColor(arrowHeadColor);
+                            arrowRenderer.SetArrowSegmentColor(arrowSegmentColor);
                         }
                         else
                         {
@@ -436,12 +444,15 @@ namespace VolleyballRotation
         }
 
         #region Handlers
+        public void ButtonRotationAll()      { HandlerClickedRotation(0); }      
+
         public void ButtonRotation1()        { HandlerClickedRotation(1); }       
         public void ButtonRotation2()        { HandlerClickedRotation(2); }
         public void ButtonRotation3()        { HandlerClickedRotation(3); }
         public void ButtonRotation4()        { HandlerClickedRotation(4); }
         public void ButtonRotation5()        { HandlerClickedRotation(5); }
         public void ButtonRotation6()        { HandlerClickedRotation(6); }
+
 
         // Button handlers for Rotation, Serve, Base Defense, ServeReceive, and Attack
         public void ButtonRotation()        {HandlerClickedSituation(Situation.Rotation);}      

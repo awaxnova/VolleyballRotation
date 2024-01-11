@@ -39,6 +39,12 @@ namespace VolleyballRotation
         public List<AnimatedArrowRenderer.SegmentTypes> segmentTypes = new List<AnimatedArrowRenderer.SegmentTypes>();
 
         [HideInTables]
+        public List<Color> arrowHeadColors = new List<Color>();
+
+        [HideInTables]
+        public List<Color> arrowSegmentColors = new List<Color>();
+
+        [HideInTables]
         public List<float> arrowHeights = new List<float>();
 
         [HideInTables]
@@ -195,8 +201,11 @@ namespace VolleyballRotation
 
         public static void Load(string folder = "")
         {
+            Debug.Log("Loading DataPosition from " + folder + " Where count is:" + data_list.Count);
             if (data_list.Count == 0)
                 data_list.AddRange(Resources.LoadAll<DataPosition>(folder));
+
+            Debug.Log("Loaded DataPosition from " + folder + " Where count is now:" + data_list.Count);
         }
 
 

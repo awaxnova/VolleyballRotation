@@ -21,7 +21,7 @@ namespace VolleyballRotation
         [NonSerialized]
         string jsonSnapshot;
 
-        public FormationData(Formation currentFormation)
+        public FormationData(Formation currentFormation, bool loadPlayerPrefs = true)
         {
             formation = currentFormation;
 
@@ -47,13 +47,21 @@ namespace VolleyballRotation
                 DataPosition dpos = baseDataPositions[i];
 
                 var defRot = new RotationData(dpos);
-                var loadedRot = defRot.Load();
+
+                RotationData loadedRot = null;
+
+                if (loadPlayerPrefs)
+                {
+                    loadedRot = defRot.Load();
+                }
 
                 MergeRotationDatas(loadedRot, defRot);
 
             }
 
-            PopulateFromSnapshot();
+            // Populate the FormationData from a snapshot
+            if(loadPlayerPrefs)
+                PopulateFromSnapshot();
         }
 
         private string GenerateKey()

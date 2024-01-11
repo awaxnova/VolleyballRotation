@@ -54,8 +54,13 @@ public class UIPlayerSettings : MonoBehaviour
 
     [Header("Toggles for which rotations in this formation will be affected by the settings")]
     public Toggle[] toggleRotations = new Toggle[6];
-          
+
+    public GameObject ButtonSettingsRevert;
+
     bool updateUI = true;
+
+    bool enteringSettingsMenu = false;
+    bool isDirtySettings = false;
 
     void PopulateDropdownWithEnum(Dropdown dropdown, System.Type enumType)
     {
@@ -67,59 +72,7 @@ public class UIPlayerSettings : MonoBehaviour
     [Header("This is the Gameobject that makes up the court floor, which has two materials, [0] is for the back court, and [1] is for the front court.")]
     public GameObject courtFloor;
 
-    [Button("Color Court Test 1")]
-    private void OnConnectedToServer()
-    {
-        SetCourtColors(Color.black, Color.gray);
-    }
 
-    public void SetFrontCourtColor(Color color)
-    {
-        Debug.Log($"SetFrontCourtColor({color})");
-        
-        // Set the Color for the front court color in material 1.
-
-        // Get the materials from the court floor.
-        Material[] materials = courtFloor.GetComponent<MeshRenderer>().sharedMaterials;
-
-        // Set the Albedo for the front court color in material 1.
-        materials[1].SetColor("_Color", color);
-
-        rotationManager.GetCurrentFormationData().frontCourtColor = color;
-    }
-
-    
-    public void SetBackCourtColor(Color color)
-    {
-
-        Debug.Log($"SetBackCourtColor({color})");
-
-        // Set the Color  for the back court color in material 0.
-
-        // Get the materials from the court floor.
-        Material[] materials = courtFloor.GetComponent<MeshRenderer>().sharedMaterials;
-
-        // Set the Albedo for the back court color in material 0.
-        materials[0].SetColor("_Color", color);
-
-        rotationManager.GetCurrentFormationData().backCourtColor = color;
-    }
-
-    private void SetCourtColors(Color frontCourtColor, Color backCourtColor)
-    {
-        SetFrontCourtColor(frontCourtColor);
-        SetBackCourtColor(backCourtColor);
-    }
-
-    private void LoadCourtColors()
-    {
-        Debug.Log($"LoadCourtColors()");
-
-        Material[] materials = courtFloor.GetComponent<MeshRenderer>().sharedMaterials;
-
-        courtFrontColorPicker.color = materials[1].GetColor("_Color");
-        courtBackColorPicker.color = materials[0].GetColor("_Color");
-    }
 
     private void OnEnable()
     {
@@ -172,6 +125,7 @@ public class UIPlayerSettings : MonoBehaviour
         // prevent interpretation of rich text tags.
         //nameInputField.richText = false;
 
+        ButtonSettingsRevert.gameObject.SetActive(false); // Hide the revert button initially.
     }
 
     private void OnColorChangedArrowHeadColorPicker(Color color)
@@ -193,7 +147,7 @@ public class UIPlayerSettings : MonoBehaviour
             }
         }
 
-        isDirtySettings = true;
+        SetFlagDirtySettings(true);
     }
 
     private void OnColorChangedArrowSegmentColorPicker(Color color)
@@ -215,7 +169,7 @@ public class UIPlayerSettings : MonoBehaviour
             }
         }
 
-        isDirtySettings = true;
+        SetFlagDirtySettings(true);
     }
 
     private void OnSubmitInputFieldName(string value)
@@ -239,7 +193,7 @@ public class UIPlayerSettings : MonoBehaviour
             }
         }
 
-        isDirtySettings = true;
+        SetFlagDirtySettings(true);
     }
 
     private void OnValueChangedArrowHeadDropdown(int value)
@@ -258,7 +212,7 @@ public class UIPlayerSettings : MonoBehaviour
             }
         }
 
-        isDirtySettings = true;
+        SetFlagDirtySettings(true);
     }
 
     private void OnValueChangedArrowSegmentDropdown(int value)
@@ -277,7 +231,7 @@ public class UIPlayerSettings : MonoBehaviour
             }
         }
 
-        isDirtySettings = true;
+        SetFlagDirtySettings(true);
     }
 
     private void OnValueChangedSegmentLengthSlider(float value)
@@ -296,7 +250,7 @@ public class UIPlayerSettings : MonoBehaviour
             }
         }
 
-        isDirtySettings = true;
+        SetFlagDirtySettings(true);
     }
 
     private void OnValueChangedArrowHeightSlider(float value)
@@ -315,7 +269,7 @@ public class UIPlayerSettings : MonoBehaviour
             }
         }
 
-        isDirtySettings = true;
+        SetFlagDirtySettings(true);
     }
 
     // Update is called once per frame
@@ -580,8 +534,59 @@ public class UIPlayerSettings : MonoBehaviour
     }
     #endregion
 
-    bool enteringSettingsMenu = false;
-    bool isDirtySettings = false;
+    public void SetFrontCourtColor(Color color)
+    {
+        Debug.Log($"SetFrontCourtColor({color})");
+
+        // Set the Color for the front court color in material 1.
+
+        // Get the materials from the court floor.
+        Material[] materials = courtFloor.GetComponent<MeshRenderer>().sharedMaterials;
+
+        // Set the Albedo for the front court color in material 1.
+        materials[1].SetColor("_Color", color);
+
+        rotationManager.GetCurrentFormationData().frontCourtColor = color;
+
+        SetFlagDirtySettings(true);
+
+    }
+
+
+    public void SetBackCourtColor(Color color)
+    {
+
+        Debug.Log($"SetBackCourtColor({color})");
+
+        // Set the Color  for the back court color in material 0.
+
+        // Get the materials from the court floor.
+        Material[] materials = courtFloor.GetComponent<MeshRenderer>().sharedMaterials;
+
+        // Set the Albedo for the back court color in material 0.
+        materials[0].SetColor("_Color", color);
+
+        rotationManager.GetCurrentFormationData().backCourtColor = color;
+
+        SetFlagDirtySettings(true);
+
+    }
+
+    private void SetCourtColors(Color frontCourtColor, Color backCourtColor)
+    {
+        SetFrontCourtColor(frontCourtColor);
+        SetBackCourtColor(backCourtColor);
+    }
+
+    private void LoadCourtColors()
+    {
+        Debug.Log($"LoadCourtColors()");
+
+        Material[] materials = courtFloor.GetComponent<MeshRenderer>().sharedMaterials;
+
+        courtFrontColorPicker.color = materials[1].GetColor("_Color");
+        courtBackColorPicker.color = materials[0].GetColor("_Color");
+    }
 
     /// <summary>
     /// This should save/commit any changes to the next snapshot.
@@ -604,7 +609,7 @@ public class UIPlayerSettings : MonoBehaviour
             // if we're exiting the settings menu, and the settings are dirty, then save the formation data.
             Debug.Log($"OnClickedButtonSettings() SAVING SETTINGS");
             rotationManager.GetCurrentFormationData().Save(forceSave: false);
-            isDirtySettings = false;
+            SetFlagDirtySettings(false);
         }
     }
 
@@ -615,6 +620,24 @@ public class UIPlayerSettings : MonoBehaviour
     {
         Debug.Log($"OnClickedButtonRevertSettings() REVERTING SETTINGS");
         rotationManager.GetCurrentFormationData().Revert();
-        isDirtySettings = false;
+        SetFlagDirtySettings(false);
+    }
+
+    public void OnClickedButtonFactoryReset()
+    {
+        // Revert any settings, reload the FormationData from the ScriptableObjects, and clear saved PlayerPrefs.
+
+        rotationManager.FactoryResetFormation();
+    }
+
+    private void SetFlagDirtySettings(bool value)
+    {
+
+        if (!value) // Setting dirty to false.
+            ButtonSettingsRevert.gameObject.SetActive(false);            // Hide Revert Button
+        else if (value && !isDirtySettings) // Setting dirty to true.
+            ButtonSettingsRevert.gameObject.SetActive(true);             // Show Revert Button 
+
+        isDirtySettings = value;
     }
 }

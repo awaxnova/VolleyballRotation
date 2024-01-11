@@ -203,17 +203,17 @@ namespace VolleyballRotation
         {
             // Here, we choose the Data for the currentFormation, and pull the data into a data structure, which has parts that get overridden by playerprefs, and can be adjusted by in-game player settings.
 
-            // TODO - Update the player names based on the currentFormation
-            // TODO - Update the player positions based on the currentFormation
-
             
-            currentFormationData = new FormationData(currentFormation);
-
-            // FIXME - TODO - Override by Loading PlayerPrefs
-
             Debug.Log($"UpdateNewFormation() {currentFormationData}");
+            currentFormationData = new FormationData(currentFormation, loadPlayerPrefs: true);
+
         }
 
+        public void FactoryResetFormation()
+        {
+            currentFormationData = new FormationData(currentFormation, loadPlayerPrefs: false);
+            currentFormationData.Save(forceSave: true);
+        }
 
         private void UpdatePlayerPositions(int currentRotation, Situation currentSituation)
         {

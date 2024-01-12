@@ -98,7 +98,7 @@ public class UIPlayerSettings : MonoBehaviour
         toggleRotations[4]?.onValueChanged.AddListener(OnValueChangedToggleRotation5);
         toggleRotations[5]?.onValueChanged.AddListener(OnValueChangedToggleRotation6);
 
-        nameInputField.onEndEdit.AddListener((string name) => { Debug.Log($"nameInputField.onEndEdit({name})"); });
+        //nameInputField.onEndEdit.AddListener((string name) => { Debug.Log($"nameInputField.onEndEdit({name})"); });
         arrowHeadDropdown.onValueChanged.AddListener((int arrowHead) => { Debug.Log($"arrowHeadDropdown.onValueChanged({arrowHead})"); });
         arrowSegmentDropdown.onValueChanged.AddListener((int arrowSegment) => { Debug.Log($"arrowSegmentDropdown.onValueChanged({arrowSegment})"); });
         segmentLengthSlider.onValueChanged.AddListener((float segmentLength) => { Debug.Log($"segmentLengthSlider.onValueChanged({segmentLength})"); });
@@ -192,6 +192,8 @@ public class UIPlayerSettings : MonoBehaviour
                 }
             }
         }
+
+        rotationManager.ForceUpdatePlayerPositions();
 
         SetFlagDirtySettings(true);
     }
@@ -438,6 +440,8 @@ public class UIPlayerSettings : MonoBehaviour
             UpdateUIValues(name, arrowHead, arrowSegment, segmentLength, arrowHeight, arrowHeadColor, arrowSegmentColor);
         }
 
+        rotationManager.ForceUpdatePlayerPositions();
+
         updateUI = false;
     }
 
@@ -621,6 +625,7 @@ public class UIPlayerSettings : MonoBehaviour
         Debug.Log($"OnClickedButtonRevertSettings() REVERTING SETTINGS");
         rotationManager.GetCurrentFormationData().Revert();
         SetFlagDirtySettings(false);
+        updateUI = true;
     }
 
     public void OnClickedButtonFactoryReset()
@@ -628,6 +633,7 @@ public class UIPlayerSettings : MonoBehaviour
         // Revert any settings, reload the FormationData from the ScriptableObjects, and clear saved PlayerPrefs.
 
         rotationManager.FactoryResetFormation();
+        updateUI = true;
     }
 
     private void SetFlagDirtySettings(bool value)

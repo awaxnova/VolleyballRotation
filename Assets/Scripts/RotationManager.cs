@@ -131,14 +131,20 @@ namespace VolleyballRotation
                 UpdateNewFormation();
             }
 
-            for (int i = 0; i < rotationMarkers.Length; i++)
+            if(showRotationMarkers != rotationMarkers[0].activeSelf)
             {
-                rotationMarkers[i].SetActive(showRotationMarkers);
+                for (int i = 0; i < rotationMarkers.Length; i++)
+                {
+                    rotationMarkers[i].SetActive(showRotationMarkers);
+                }
             }
 
-            for (int i = 0; i < playerMarkers.Count; i++)
+            if(showPlayerMarkers != playerMarkers[0].activeSelf)
             {
-                playerMarkers[i].SetActive(showPlayerMarkers);
+                for (int i = 0; i < playerMarkers.Count; i++)
+                {
+                    playerMarkers[i].SetActive(showPlayerMarkers);
+                }
             }
 
             // if the current rotation is different from the last rotation
@@ -191,7 +197,7 @@ namespace VolleyballRotation
                     FaceCamera(decimalPrefabs[i]);
             }
 
-            UpdatePlayerPositions(currentRotation, currentSituation);
+            UpdatePlayerPositions(currentRotation, currentSituation, false);
             UpdateNextPositionArrows(currentRotation, currentSituation, nextRotation, nextSituation);
 
             lastCurrentRotation = currentRotation;
@@ -215,12 +221,23 @@ namespace VolleyballRotation
             currentFormationData.Save(forceSave: true);
         }
 
-        private void UpdatePlayerPositions(int currentRotation, Situation currentSituation)
+        /// <summary>
+        /// The settings manager can force an update through by calling this method.
+        /// </summary>
+        public void ForceUpdatePlayerPositions()
+        { 
+            UpdatePlayerPositions(currentRotation, currentSituation, true);
+        }
+
+        private void UpdatePlayerPositions(int currentRotation, Situation currentSituation, bool forceUpdate = false)
         {
-            if (lastCurrentRotation == currentRotation && lastCurrentSituation == currentSituation)
+            if(!forceUpdate)
             {
-                // No change in rotation or situation, so no need to update the player positions.
-                return;
+                if (lastCurrentRotation == currentRotation && lastCurrentSituation == currentSituation)
+                {
+                    // No change in rotation or situation, so no need to update the player positions.
+                    return;
+                }
             }
 
             // Update the player positions based on the current rotation and situation
@@ -278,6 +295,7 @@ namespace VolleyballRotation
         private void UpdateNextPositionArrows(int currentRotation, Situation currentSituation, int nextRotation, Situation nextSituation)
         {
             UpdateArrows();
+
 
             // If there is a difference in rotation or situation, then show the arrows, else hide them.
             if ((currentRotation != nextRotation) || (currentSituation != nextSituation))

@@ -141,8 +141,14 @@ public class UIPlayerSettings : MonoBehaviour
             {
                 foreach (Situation situation in System.Enum.GetValues(typeof(Situation)).Cast<Situation>().Where(s => s != Situation.None))
                 {
-                    // Update the arrowHeadColor for this rotation.
-                    rotationManager.GetCurrentFormationData().SetArrowHeadColor(situation, rotationNumber, getPlayerNumberToggleSelected(), color);
+                    for(int playerNumber = 1; playerNumber <= 6; playerNumber++)
+                    {
+                        if (isPlayerSelected(playerNumber))
+                        {
+                            // Update the arrowHeadColor for this rotation.
+                            rotationManager.GetCurrentFormationData().SetArrowHeadColor(situation, rotationNumber, playerNumber, color);
+                        }
+                    }
                 }
             }
         }
@@ -163,8 +169,14 @@ public class UIPlayerSettings : MonoBehaviour
             {
                 foreach (Situation situation in System.Enum.GetValues(typeof(Situation)).Cast<Situation>().Where(s => s != Situation.None))
                 {
-                    // Update the arrowSegmentColor for this rotation.
-                    rotationManager.GetCurrentFormationData().SetArrowSegmentColor(situation, rotationNumber, getPlayerNumberToggleSelected(), color);
+                    for(int playerNumber = 1; playerNumber <= 6; playerNumber++)
+                    {
+                        if (isPlayerSelected(playerNumber))
+                        {
+                            // Update the arrowSegmentColor for this rotation.
+                            rotationManager.GetCurrentFormationData().SetArrowSegmentColor(situation, rotationNumber, playerNumber, color);
+                        }
+                    }
                 }
             }
         }
@@ -187,8 +199,14 @@ public class UIPlayerSettings : MonoBehaviour
             {
                 foreach (Situation situation in System.Enum.GetValues(typeof(Situation)).Cast<Situation>().Where(s => s != Situation.None))
                 {
-                    // Update the name for this rotation.
-                    rotationManager.GetCurrentFormationData().SetPlayerName(situation, rotationNumber, getPlayerNumberToggleSelected(), value);
+                    for(int playerNumber = 1; playerNumber <= 6; playerNumber++)
+                    {
+                        if (isPlayerSelected(playerNumber))
+                        {
+                            // Update the name for this rotation.
+                            rotationManager.GetCurrentFormationData().SetPlayerName(situation, rotationNumber, playerNumber, value);
+                        }
+                    }
                 }
             }
         }
@@ -208,8 +226,14 @@ public class UIPlayerSettings : MonoBehaviour
             {
                 foreach (Situation situation in System.Enum.GetValues(typeof(Situation)).Cast<Situation>().Where(s => s != Situation.None))
                 {
-                    // Update the arrowHead for this rotation.
-                    rotationManager.GetCurrentFormationData().SetArrowType(situation, rotationNumber, getPlayerNumberToggleSelected(), (AnimatedArrowRenderer.ArrowTypes)value);                   
+                    for(int playerNumber = 1; playerNumber <= 6; playerNumber++)
+                    {
+                        if (isPlayerSelected(playerNumber))
+                        {
+                            // Update the arrowHead for this rotation.
+                            rotationManager.GetCurrentFormationData().SetArrowType(situation, rotationNumber, playerNumber, (AnimatedArrowRenderer.ArrowTypes)value);
+                        }
+                    }
                 }
             }
         }
@@ -227,8 +251,14 @@ public class UIPlayerSettings : MonoBehaviour
             {
                 foreach (Situation situation in System.Enum.GetValues(typeof(Situation)).Cast<Situation>().Where(s => s != Situation.None))
                 {
-                    // Update the arrowSegment for this rotation.
-                    rotationManager.GetCurrentFormationData().SetSegmentType(situation, rotationNumber, getPlayerNumberToggleSelected(), (AnimatedArrowRenderer.SegmentTypes)value);
+                    for(int playerNumber = 1; playerNumber <= 6; playerNumber++)
+                    {
+                        if (isPlayerSelected(playerNumber))
+                        {
+                            // Update the arrowSegment for this rotation.
+                            rotationManager.GetCurrentFormationData().SetSegmentType(situation, rotationNumber, playerNumber, (AnimatedArrowRenderer.SegmentTypes)value);
+                        }
+                    }
                 }
             }
         }
@@ -246,8 +276,14 @@ public class UIPlayerSettings : MonoBehaviour
             {
                 foreach (Situation situation in System.Enum.GetValues(typeof(Situation)).Cast<Situation>().Where(s => s != Situation.None))
                 {
-                    // Update the segmentLength for this rotation.
-                    rotationManager.GetCurrentFormationData().SetArrowSegmentLength(situation, rotationNumber, getPlayerNumberToggleSelected(), value);
+                    for (int playerNumber = 1; playerNumber <= 6; playerNumber++)
+                    {
+                        if (isPlayerSelected(playerNumber))
+                        {
+                            // Update the segmentLength for this rotation.
+                            rotationManager.GetCurrentFormationData().SetArrowSegmentLength(situation, rotationNumber, playerNumber, value);
+                        }
+                    }
                 }
             }
         }
@@ -265,8 +301,14 @@ public class UIPlayerSettings : MonoBehaviour
             {
                 foreach (Situation situation in System.Enum.GetValues(typeof(Situation)).Cast<Situation>().Where(s => s != Situation.None))
                 {
-                    // Update the arrowHeight for this rotation.
-                    rotationManager.GetCurrentFormationData().SetArrowHeight(situation, rotationNumber, getPlayerNumberToggleSelected(), value);
+                    for (int playerNumber = 1; playerNumber <= 6; playerNumber++)
+                    {
+                        if (isPlayerSelected(playerNumber))
+                        {
+                            // Update the arrowHeight for this rotation.
+                            rotationManager.GetCurrentFormationData().SetArrowHeight(situation, rotationNumber, playerNumber, value);
+                        }
+                    }
                 }
             }
         }
@@ -305,17 +347,30 @@ public class UIPlayerSettings : MonoBehaviour
         }
     }
 
-    int getPlayerNumberToggleSelected()
+    bool isPlayerSelected(int playerNumber)
     {
-        for(int indexer=0; indexer < togglePlayers.Length; indexer++)
+        if (togglePlayers[playerNumber-1].isOn)
+        {
+            return true;
+        }
+        else
+        {
+            return false;
+        }
+    }
+
+    int getQuantityPlayerTogglesSelected()
+    {
+        int count = 0;
+        for (int indexer = 0; indexer < togglePlayers.Length; indexer++)
         {
             if (togglePlayers[indexer].isOn)
             {
-                return indexer + 1;
+                count++;
             }
         }
 
-        return 0;
+        return count;
     }
 
     int getQuantityRotationTogglesSelected()
@@ -341,11 +396,9 @@ public class UIPlayerSettings : MonoBehaviour
 
         // Which player number is selected?
         // If it's 0 then we're using the general settings instead of player settings.
-        int playerNumber = getPlayerNumberToggleSelected();
-
         // Which rotation numbers are selected, at least one?  If so, enable the UI elements.
         // If not, disable the UI elements.
-        if((playerNumber > 0) && (getQuantityRotationTogglesSelected() > 0))
+        if((getQuantityPlayerTogglesSelected() > 0) && (getQuantityRotationTogglesSelected() > 0))
         {
             EnableUIElements(true);
         }
@@ -390,47 +443,54 @@ public class UIPlayerSettings : MonoBehaviour
                     // If the rotation /situation, then compare the values.
                     if ( isRotationSelected(rotationNumber) && (rotationData != null))
                     {
-                        if (first)
-                        {
-                            name = formationData.GetPlayerName(situation, rotationNumber, playerNumber);
-                            arrowHead = formationData.GetArrowType(situation, rotationNumber, playerNumber);
-                            arrowSegment = formationData.GetSegmentType(situation, rotationNumber, playerNumber);
-                            segmentLength = formationData.GetArrowSegmentLength(situation, rotationNumber, playerNumber);
-                            arrowHeight = formationData.GetArrowHeight(situation, rotationNumber, playerNumber);
-                            arrowHeadColor = formationData.GetArrowHeadColor(situation, rotationNumber, playerNumber);
-                            arrowSegmentColor = formationData.GetArrowSegmentColor(situation, rotationNumber, playerNumber);
 
-                            first = false;
-                        }
-                        else
+                        for (int playerNumber = 1; playerNumber <= 6; playerNumber++)
                         {
-                            if (name != formationData.GetPlayerName(situation, rotationNumber, playerNumber))
-                            {
-                                name = "";
-                            }
-                            if (arrowHead != formationData.GetArrowType(situation, rotationNumber, playerNumber))
-                            {
-                                arrowHead = ArrowTypes.None;
-                            }
-                            if (arrowSegment != formationData.GetSegmentType(situation, rotationNumber, playerNumber))
-                            {
-                                arrowSegment = SegmentTypes.None;
-                            }
-                            if (segmentLength != formationData.GetArrowSegmentLength(situation, rotationNumber, playerNumber))
-                            {
-                                segmentLength = 0;
-                            }
-                            if (arrowHeight != formationData.GetArrowHeight(situation, rotationNumber, playerNumber))
-                            {
-                                arrowHeight = 0;
-                            }
-                            if( arrowHeadColor != formationData.GetArrowHeadColor(situation, rotationNumber, playerNumber))
-                            {
-                                arrowHeadColor = Color.red;
-                            }
-                            if (arrowSegmentColor != formationData.GetArrowSegmentColor(situation, rotationNumber, playerNumber))
-                            {
-                                arrowSegmentColor = Color.blue;
+                            if (isPlayerSelected(playerNumber))
+                            {                            
+                                if (first)
+                                {
+                                    name = formationData.GetPlayerName(situation, rotationNumber, playerNumber);
+                                    arrowHead = formationData.GetArrowType(situation, rotationNumber, playerNumber);
+                                    arrowSegment = formationData.GetSegmentType(situation, rotationNumber, playerNumber);
+                                    segmentLength = formationData.GetArrowSegmentLength(situation, rotationNumber, playerNumber);
+                                    arrowHeight = formationData.GetArrowHeight(situation, rotationNumber, playerNumber);
+                                    arrowHeadColor = formationData.GetArrowHeadColor(situation, rotationNumber, playerNumber);
+                                    arrowSegmentColor = formationData.GetArrowSegmentColor(situation, rotationNumber, playerNumber);
+
+                                    first = false;
+                                }
+                                else
+                                {
+                                    if (name != formationData.GetPlayerName(situation, rotationNumber, playerNumber))
+                                    {
+                                        name = "";
+                                    }
+                                    if (arrowHead != formationData.GetArrowType(situation, rotationNumber, playerNumber))
+                                    {
+                                        arrowHead = ArrowTypes.None;
+                                    }
+                                    if (arrowSegment != formationData.GetSegmentType(situation, rotationNumber, playerNumber))
+                                    {
+                                        arrowSegment = SegmentTypes.None;
+                                    }
+                                    if (segmentLength != formationData.GetArrowSegmentLength(situation, rotationNumber, playerNumber))
+                                    {
+                                        segmentLength = 0;
+                                    }
+                                    if (arrowHeight != formationData.GetArrowHeight(situation, rotationNumber, playerNumber))
+                                    {
+                                        arrowHeight = 0;
+                                    }
+                                    if( arrowHeadColor != formationData.GetArrowHeadColor(situation, rotationNumber, playerNumber))
+                                    {
+                                        arrowHeadColor = Color.red;
+                                    }
+                                    if (arrowSegmentColor != formationData.GetArrowSegmentColor(situation, rotationNumber, playerNumber))
+                                    {
+                                        arrowSegmentColor = Color.blue;
+                                    }
+                                }
                             }
                         }
                     }
@@ -454,6 +514,7 @@ public class UIPlayerSettings : MonoBehaviour
         segmentLengthSlider.value = segmentLength;
         arrowHeightSlider.value = arrowHeight;
         arrowHeadColorPicker.color = arrowHeadColor;
+        arrowSegmentColorPicker.color = arrowSegmentColor;
     }
 
 

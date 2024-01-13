@@ -9,8 +9,7 @@ public class PlayerMarker : MonoBehaviour
     public int playerNumber;
     private RotationManager rotationManager;
     private bool isDragging = false;
-    private Vector3 startingMousePosition; // Store the initial mouse position on click
-
+    private Vector3 startingPosition;  // Store the initial player position on click
     // Start is called before the first frame update
     void Start()
     {
@@ -30,7 +29,7 @@ public class PlayerMarker : MonoBehaviour
     private void OnMouseDown()
     {
         Debug.Log($"Mouse down ({playerNumber})");
-        startingMousePosition = Input.mousePosition;
+        startingPosition = transform.position;
         isDragging = true;
     }
 
@@ -38,8 +37,17 @@ public class PlayerMarker : MonoBehaviour
     {
         Debug.Log($"Mouse up ({playerNumber})");
         isDragging = false;
-        // Update the player's position in the rotation manager
-        rotationManager.SavePlayerPosition(this);
+
+        if(rotationManager.ValidatePositions())
+        {
+            // Update the player's position in the rotation manager
+            rotationManager.SavePlayerPosition(this);
+        }
+        else
+        {
+            // Revert the player's position if it's invalid.
+            transform.position = startingPosition;
+        }
     }
 
     // When the player marker is dragged, update the player's position, only in the x and z dimensions

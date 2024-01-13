@@ -581,6 +581,114 @@ namespace VolleyballRotation
             rotationData.positions[playerMarker.playerNumber - 1] = playerMarker.transform.position;
             rotationData.Save();
         }
+
+
+        private List<PlayerMarker> RotatePlayers(int rotationNumber)
+        { 
+            // Take the playerMarkers and return a list of them in the order defined by the rotation number, where only 1 through 6 exists.
+
+            List<PlayerMarker> rotatedPlayers = new List<PlayerMarker>();
+
+            // Add to the list the playermarker for the player that's in position 0 for this rotation.
+            // Add to the list the playermarker for the player that's in position 1 for this rotation.
+            // Add to the list the playermarker for the player that's in position 2 for this rotation.
+            // Add to the list the playermarker for the player that's in position 3 for this rotation.
+            // Add to the list the playermarker for the player that's in position 4 for this rotation.
+            // Add to the list the playermarker for the player that's in position 5 for this rotation.
+
+            // In rotation 1, plapyer 1 is in position 1, player 2 is in position 2, etc.
+            // In rotation 2, player 1 is in position 6, player 2 is in position 1, etc.
+            // In rotation 3, player 1 is in position 5, player 2 is in position 6, etc.
+            // In rotation 4, player 1 is in position 4, player 2 is in position 5, etc.
+            // In rotation 5, player 1 is in position 3, player 2 is in position 4, etc.
+            // In rotation 6, player 1 is in position 2, player 2 is in position 3, etc.
+
+            int indexOfPlayerInPosition0 = rotationNumber - 1;
+            int indexOfPlayerInPosition1 = (indexOfPlayerInPosition0 + 1) % 6;
+            int indexOfPlayerInPosition2 = (indexOfPlayerInPosition0 + 2) % 6;
+            int indexOfPlayerInPosition3 = (indexOfPlayerInPosition0 + 3) % 6;
+            int indexOfPlayerInPosition4 = (indexOfPlayerInPosition0 + 4) % 6;
+            int indexOfPlayerInPosition5 = (indexOfPlayerInPosition0 + 5) % 6;
+
+            rotatedPlayers.Add(playerMarkers[indexOfPlayerInPosition0].GetComponent<PlayerMarker>());
+            rotatedPlayers.Add(playerMarkers[indexOfPlayerInPosition1].GetComponent<PlayerMarker>());
+            rotatedPlayers.Add(playerMarkers[indexOfPlayerInPosition2].GetComponent<PlayerMarker>());
+            rotatedPlayers.Add(playerMarkers[indexOfPlayerInPosition3].GetComponent<PlayerMarker>());
+            rotatedPlayers.Add(playerMarkers[indexOfPlayerInPosition4].GetComponent<PlayerMarker>());
+            rotatedPlayers.Add(playerMarkers[indexOfPlayerInPosition5].GetComponent<PlayerMarker>());
+
+            return rotatedPlayers;
+        }
+
+
+        public bool ValidatePositions()
+        {
+            List<PlayerMarker> rotatedPlayerMarkers = RotatePlayers(currentRotation);
+
+            // Player 1 is at index 0, player 2 is at index 1, etc.
+
+            Debug.Log($"ValidatePositions() rotatedPlayer.Count:{rotatedPlayerMarkers.Count} currentRotation:{currentRotation}");
+
+            // In the Z direction, Player 1 should be behind player 2
+            if (rotatedPlayerMarkers[0].gameObject.transform.position.z > rotatedPlayerMarkers[1].gameObject.transform.position.z)
+                return false;
+
+            
+            // In the X direction, Player 1 should be to the right of player 6
+            if (rotatedPlayerMarkers[0].gameObject.transform.position.x < rotatedPlayerMarkers[5].gameObject.transform.position.x)
+                return false;
+            // Player 2 should be compared to players 1 and 3.
+            // In the X direction, Player 2 should be to the right of player 3
+            if (rotatedPlayerMarkers[1].gameObject.transform.position.x < rotatedPlayerMarkers[2].gameObject.transform.position.x)
+                return false;
+
+            // Player 3 should be compared to players 2, 4, and 6
+            // In the X direction, Player 3 should be to the left of player 2
+            if (rotatedPlayerMarkers[2].gameObject.transform.position.x > rotatedPlayerMarkers[1].gameObject.transform.position.x)
+                return false;
+
+            // In the X direction, Player 3 should be to the right of player 4
+            if (rotatedPlayerMarkers[2].gameObject.transform.position.x < rotatedPlayerMarkers[3].gameObject.transform.position.x)
+                return false;
+
+            // In the Z direction, Player 3 should be in front of player 6
+            if (rotatedPlayerMarkers[2].gameObject.transform.position.z < rotatedPlayerMarkers[5].gameObject.transform.position.z)
+                return false;
+
+
+            // Player 4 should be compared to players 3 and 5
+            // In the X direction, Player 4 should be to the left of player 3
+            //if (rotatedPlayerMarkers[3].gameObject.transform.position.x > rotatedPlayerMarkers[2].gameObject.transform.position.x)
+            //    return false;
+
+            // In the Z direction, Player 4 should be in front of player 5
+            if (rotatedPlayerMarkers[3].gameObject.transform.position.z < rotatedPlayerMarkers[4].gameObject.transform.position.z)
+                return false;
+
+            // Player 5 should be compared to players 4 and 6
+            // In the Z direction, Player 5 should be behind player 4
+            if (rotatedPlayerMarkers[4].gameObject.transform.position.z > rotatedPlayerMarkers[3].gameObject.transform.position.z)
+                return false;
+
+            // In the X direction, Player 5 should be to the left of player 6
+            if (rotatedPlayerMarkers[4].gameObject.transform.position.x > rotatedPlayerMarkers[5].gameObject.transform.position.x)
+                return false;
+
+            // Player 6 should be compared to players 1, 5, and 3
+            // In the X direction, Player 6 should be to the left of player 1
+            //if (rotatedPlayerMarkers[5].gameObject.transform.position.x > rotatedPlayerMarkers[0].gameObject.transform.position.x)
+            //    return false;
+
+            // In the Z direction, Player 6 should be behind player 3
+            if (rotatedPlayerMarkers[5].gameObject.transform.position.z > rotatedPlayerMarkers[2].gameObject.transform.position.z)
+                return false;
+
+            // In the X direction, Player 6 should be to the right of player 5
+            if (rotatedPlayerMarkers[5].gameObject.transform.position.x < rotatedPlayerMarkers[4].gameObject.transform.position.x)
+                return false;
+
+            return true;
+        }
     }
 
 

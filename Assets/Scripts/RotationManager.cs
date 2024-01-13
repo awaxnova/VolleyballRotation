@@ -625,6 +625,10 @@ namespace VolleyballRotation
         {
             List<PlayerMarker> rotatedPlayerMarkers = RotatePlayers(currentRotation);
 
+            // For BaseDefense and Attack, we don't need to validate the positions, since they're not used.
+            if ((currentSituation == Situation.BaseDefense) || (currentSituation == Situation.ReadyToAttack))
+                return true;
+
             // Player 1 is at index 0, player 2 is at index 1, etc.
 
             Debug.Log($"ValidatePositions() rotatedPlayer.Count:{rotatedPlayerMarkers.Count} currentRotation:{currentRotation}");

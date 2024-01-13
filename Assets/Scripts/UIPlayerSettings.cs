@@ -46,6 +46,8 @@ public class UIPlayerSettings : MonoBehaviour
     public FlexibleColorPicker courtFrontColorPicker;
     public FlexibleColorPicker courtBackColorPicker;
 
+    public Dropdown playerNameDropdown;
+
     [Header("Toggles for choosing the General Settings panel of options")]
     public Toggle toggleGeneral;
 
@@ -108,7 +110,7 @@ public class UIPlayerSettings : MonoBehaviour
 
         PopulateDropdownWithEnum(arrowHeadDropdown, typeof(ArrowTypes));
         PopulateDropdownWithEnum(arrowSegmentDropdown, typeof(SegmentTypes));
-
+        
         nameInputField.onSubmit.AddListener(OnSubmitInputFieldName); 
         arrowHeadDropdown.onValueChanged.AddListener(OnValueChangedArrowHeadDropdown);
         arrowSegmentDropdown.onValueChanged.AddListener(OnValueChangedArrowSegmentDropdown);
@@ -126,6 +128,9 @@ public class UIPlayerSettings : MonoBehaviour
         //nameInputField.richText = false;
 
         ButtonSettingsRevert.gameObject.SetActive(false); // Hide the revert button initially.
+
+        playerNameDropdown.onValueChanged.AddListener(OnValueChangedPlayerNameDropdown);
+
     }
 
     private void OnColorChangedArrowHeadColorPicker(Color color)
@@ -182,6 +187,16 @@ public class UIPlayerSettings : MonoBehaviour
         }
 
         SetFlagDirtySettings(true);
+    }
+
+    private void OnValueChangedPlayerNameDropdown(int selectedIndex)
+    { 
+        // When this value is changed, we should change the value of the InputField for the name, and then call the OnSubmitInputFieldName method.
+
+        string value = playerNameDropdown.options[selectedIndex].text;
+        Debug.Log($"OnValueChangedPlayerNameDropdown({value})");
+        nameInputField.text = value;
+        OnSubmitInputFieldName(value);
     }
 
     private void OnSubmitInputFieldName(string value)
@@ -326,6 +341,7 @@ public class UIPlayerSettings : MonoBehaviour
     public void EnableUIElements(bool enable)
     { 
         nameInputField.gameObject.SetActive(enable);
+        playerNameDropdown.gameObject.SetActive(enable);
         arrowHeadDropdown.gameObject.SetActive(enable);
         arrowSegmentDropdown.gameObject.SetActive(enable);
         segmentLengthSlider.gameObject.SetActive(enable);
@@ -429,6 +445,7 @@ public class UIPlayerSettings : MonoBehaviour
             float arrowHeight = 0;
             Color arrowHeadColor = Color.black;
             Color arrowSegmentColor = Color.black;
+            List<string> playerNameDefaults = new List<string>();
 
             bool first = true;
 
@@ -443,6 +460,16 @@ public class UIPlayerSettings : MonoBehaviour
                     // If the rotation /situation, then compare the values.
                     if ( isRotationSelected(rotationNumber) && (rotationData != null))
                     {
+
+                        // Add unique strings to the list of default player names.
+                        foreach (string playerName in rotationData.playerNameDefaults)
+                        {
+                            Debug.Log($"Considering dropdown -> {playerName}");
+                            if (!playerNameDefaults.Contains(playerName))
+                            {
+                                playerNameDefaults.Add(playerName);
+                            }
+                        }
 
                         for (int playerNumber = 1; playerNumber <= 6; playerNumber++)
                         {
@@ -497,7 +524,7 @@ public class UIPlayerSettings : MonoBehaviour
                 }
             }
 
-            UpdateUIValues(name, arrowHead, arrowSegment, segmentLength, arrowHeight, arrowHeadColor, arrowSegmentColor);
+            UpdateUIValues(name, arrowHead, arrowSegment, segmentLength, arrowHeight, arrowHeadColor, arrowSegmentColor, playerNameDefaults);
         }
 
         rotationManager.ForceUpdatePlayerPositions();
@@ -505,7 +532,7 @@ public class UIPlayerSettings : MonoBehaviour
         updateUI = false;
     }
 
-    public void UpdateUIValues(string name, ArrowTypes arrowHead, SegmentTypes arrowSegment, float segmentLength, float arrowHeight, Color arrowHeadColor, Color arrowSegmentColor)
+    public void UpdateUIValues(string name, ArrowTypes arrowHead, SegmentTypes arrowSegment, float segmentLength, float arrowHeight, Color arrowHeadColor, Color arrowSegmentColor, List<string> playerNamesDropdown)
     {
 
         nameInputField.text = name;
@@ -515,6 +542,10 @@ public class UIPlayerSettings : MonoBehaviour
         arrowHeightSlider.value = arrowHeight;
         arrowHeadColorPicker.color = arrowHeadColor;
         arrowSegmentColorPicker.color = arrowSegmentColor;
+
+        // Populate the dropdown with the player names.
+        playerNameDropdown.ClearOptions();
+        playerNameDropdown.AddOptions(playerNamesDropdown);
     }
 
 
@@ -694,6 +725,8 @@ public class UIPlayerSettings : MonoBehaviour
         // Revert any settings, reload the FormationData from the ScriptableObjects, and clear saved PlayerPrefs.
 
         rotationManager.FactoryResetFormation();
+        rotationManager.GetCurrentFormationData().Revert();
+        SetFlagDirtySettings(false);
         updateUI = true;
     }
 

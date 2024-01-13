@@ -177,10 +177,16 @@ namespace VolleyballRotation
                     loadedRot.arrowSegmentLengths = defRot.arrowSegmentLengths;
                     dirty = true;
                 }
+                if (loadedRot.playerNameDefaults.Count == 0)
+                {
+                    // If the loadedRot has an empty list, then take the list from the defRot
+                    loadedRot.playerNameDefaults = defRot.playerNameDefaults;
+                    dirty = true;                   
+                }
 
                 // If the defRot has an empty list, and Player Prefs doesn't, then empty the PlayerPrefs by saving over it.
                 // Prevents bloat in the player prefs if certain members are removed.
-                if(defRot.positions.Count == 0 && loadedRot.positions.Count > 0)
+                if (defRot.positions.Count == 0 && loadedRot.positions.Count > 0)
                 {
                     loadedRot.positions.Clear();
                     dirty = true;
@@ -218,6 +224,11 @@ namespace VolleyballRotation
                 if (defRot.arrowSegmentLengths.Count == 0 && loadedRot.arrowSegmentLengths.Count > 0)
                 {
                     loadedRot.arrowSegmentLengths.Clear();
+                    dirty = true;
+                }
+                if (defRot.playerNameDefaults.Count == 0 && loadedRot.playerNameDefaults.Count > 0)
+                {
+                    loadedRot.playerNameDefaults.Clear();
                     dirty = true;
                 }
 

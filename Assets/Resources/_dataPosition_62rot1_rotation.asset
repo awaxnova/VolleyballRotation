@@ -63,4 +63,22 @@ MonoBehaviour:
   positionMarkerPrefab: {fileID: 9063309631332321280, guid: 5ea2a9050d79d184591ca717664b96f7, type: 3}
   allowPositionOverwrite: 0
   allowPositionMarkerOverwrite: 0
+  playerNameOptions:
+  - <c=blue>X<sub>1</sub>
+  - <c=yellow>X<sub>1</sub>
+  - <c=red>X<sub>1</sub>
+  - <c=purple>K<sub>athryn</sub>
+  - <c=purple>KC<sub>p2</sub>
+  - <c=green>X<sub>1</sub>
+  - <c=lime>X<sub>1</sub>
+  - <c=gold>X<sub>1</sub>
+  - <c=tak>X<sub>1</sub>
+  - <c=gold>M<sub>ryn</sub>
+  - <c=gold>I<sub>blla</sub>
+  - <c=blue>M<sub>ddy</sub>
+  - <c=blue>I<sub>sla</sub>
+  - <c=blue>J<sub>ulia</sub>
+  - <c=red>L<sub>exi</sub>
+  - <c=red>S<sub>rra</sub>
+  - <c=red>K<sub>c</sub>
   enableDestroyDuringCleanUp: 0

@@ -25,7 +25,9 @@ namespace VolleyballRotation
         public List<float> arrowHeights;
         public List<float> arrowSegmentLengths;
 
-        [System.NonSerialized]
+        public List<string> playerNameDefaults = new List<string>();
+
+        [System.NonSerialized] // This won't be serialized and won't be saved in the snapshot in PlayerPrefs
         private string jsonSnapshot;
 
         public RotationData(DataPosition dpos)
@@ -83,6 +85,12 @@ namespace VolleyballRotation
             for (int i = 0; i < dpos.arrowSegmentLengths.Count; i++)
             {
                 arrowSegmentLengths.Add(dpos.arrowSegmentLengths[i]);
+            }
+
+            playerNameDefaults = new List<string>();
+            for (int i = 0; i < dpos.playerNameOptions.Count; i++)
+            {
+                playerNameDefaults.Add(dpos.playerNameOptions[i]);
             }
 
             // Upon creation, capture a snapshot of this RotationData

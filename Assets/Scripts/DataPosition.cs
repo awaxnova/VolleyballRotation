@@ -63,6 +63,9 @@ namespace VolleyballRotation
         public bool allowPositionOverwrite = false;
         [HideInTables]
         public bool allowPositionMarkerOverwrite = false;
+        
+        [HideInTables]
+        public List<string> playerNameOptions = new List<string>();
 
 
         [HideInTables, Button("UseExistingPlayerMarkers", Name = "Use Existing Player Markers"), ButtonGroup("Visualize"), GUIColor("green")]

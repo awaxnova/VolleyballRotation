@@ -574,6 +574,13 @@ namespace VolleyballRotation
         {
             return currentFormationData;
         }
+
+        internal void SavePlayerPosition(PlayerMarker playerMarker)
+        {
+            RotationData rotationData = currentFormationData.GetRotationData(currentSituation, currentRotation);
+            rotationData.positions[playerMarker.playerNumber - 1] = playerMarker.transform.position;
+            rotationData.Save();
+        }
     }
 
 

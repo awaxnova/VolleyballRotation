@@ -726,6 +726,7 @@ public class UIPlayerSettings : MonoBehaviour
 
         rotationManager.FactoryResetFormation();
         rotationManager.GetCurrentFormationData().Revert();
+        rotationManager.ForceUpdatePlayerPositions();
         SetFlagDirtySettings(false);
         updateUI = true;
     }

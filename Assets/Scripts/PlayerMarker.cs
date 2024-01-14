@@ -1,3 +1,4 @@
+using Arrow;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -9,12 +10,28 @@ public class PlayerMarker : MonoBehaviour
     public int playerNumber;
     private RotationManager rotationManager;
     private bool isDragging = false;
+
     private Vector3 startingPosition;  // Store the initial player position on click
+
+    public SuperTextMesh superTextMeshComponent;
+    private BoxCollider boxColliderComponent;
+    private STMMatchRect boxColliderStmMatchRect;
+
+    private RectTransform boxColliderRT;
+    public AnimatedArrowRenderer arrowRenderer;
+
     // Start is called before the first frame update
     void Start()
     {
         // Find the rotation manager
         rotationManager = GameObject.Find("Managers").GetComponent<RotationManager>();
+
+        // Assuming you have a reference to the SuperTextMesh component and the BoxCollider2D component
+        superTextMeshComponent  = GetComponentInChildren<SuperTextMesh>();
+        boxColliderComponent = GetComponent<BoxCollider>();
+        boxColliderStmMatchRect = boxColliderComponent.GetComponentInChildren<STMMatchRect>();
+        boxColliderRT = boxColliderStmMatchRect.GetComponent<RectTransform>();
+        arrowRenderer = GetComponentInChildren<AnimatedArrowRenderer>();
     }
 
     // Update is called once per frame
@@ -67,7 +84,17 @@ public class PlayerMarker : MonoBehaviour
             transform.position = new Vector3(hit.point.x, transform.position.y, hit.point.z);
 
             // Debug print the new position
-            Debug.Log($"New position: {transform.position}");
+            //Debug.Log($"New position: {transform.position}");
+        }
+    }
+    public void UpdateBoxColliderToMatchSuperTextMesh()
+    {
+        if (superTextMeshComponent != null && boxColliderComponent != null)
+        {
+            // Update the BoxCollider2D size to match the SuperTextMesh size
+            // The BoxCollider should match the Rect Transform of this GameObject
+            boxColliderStmMatchRect.Match();
+            boxColliderComponent.size =  new Vector3( boxColliderRT.sizeDelta.x, boxColliderRT.sizeDelta.y, boxColliderComponent.size.z);
         }
     }
 }

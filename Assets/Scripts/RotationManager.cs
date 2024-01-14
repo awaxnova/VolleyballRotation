@@ -18,7 +18,9 @@ namespace VolleyballRotation
         public GameObject playerMarkerPrefab;
 
         [Header("Player Markers - show the player position names")]
-        private List<GameObject> playerMarkers = new List<GameObject>();
+        private List<GameObject> playerMarkerGOs = new List<GameObject>();
+
+        private List<PlayerMarker> playerMarkers = new List<PlayerMarker>();
 
         public string[] playerNames = new string[6];
 
@@ -105,7 +107,7 @@ namespace VolleyballRotation
             for (int i = 0; i < 6; i++)
             {
                 var pm = Instantiate(playerMarkerPrefab); 
-                playerMarkers.Add(pm);               
+                playerMarkerGOs.Add(pm);               
 
                 var stm = pm.GetComponentInChildren<SuperTextMesh>();
                 if (stm != null)
@@ -113,7 +115,8 @@ namespace VolleyballRotation
                     stm.text = playerNames[i];
                 }
 
-                var pmScript = pm.GetComponent<PlayerMarker>();
+                playerMarkers.Add(playerMarkerGOs[i].GetComponent<PlayerMarker>());
+                var pmScript = playerMarkers[i];
                 if (pmScript != null)
                 {
                     pmScript.playerNumber = i + 1;
@@ -139,11 +142,11 @@ namespace VolleyballRotation
                 }
             }
 
-            if(showPlayerMarkers != playerMarkers[0].activeSelf)
+            if(showPlayerMarkers != playerMarkerGOs[0].activeSelf)
             {
-                for (int i = 0; i < playerMarkers.Count; i++)
+                for (int i = 0; i < playerMarkerGOs.Count; i++)
                 {
-                    playerMarkers[i].SetActive(showPlayerMarkers);
+                    playerMarkerGOs[i].SetActive(showPlayerMarkers);
                 }
             }
 
@@ -251,10 +254,10 @@ namespace VolleyballRotation
             if (rotationData != null)
             {
                 // Update the player positions based on the DataPosition
-                for (int i = 0; i < playerMarkers.Count; i++)
+                for (int i = 0; i < playerMarkerGOs.Count; i++)
                 {
                     // Move this GameObject to the targetTransform's position over 0.4 second
-                    playerMarkers[i].transform.DOMove(rotationData.positions[i], playerPositionTransitionDuration).SetEase(Ease.Linear)
+                    playerMarkerGOs[i].transform.DOMove(rotationData.positions[i], playerPositionTransitionDuration).SetEase(Ease.Linear)
                         .OnComplete(() =>
                         {
                             //playerMarkers[i].transform.rotation = dataPosition.positions[i].rotation;
@@ -262,7 +265,7 @@ namespace VolleyballRotation
                         }
                     );
 
-                    var stm = playerMarkers[i].GetComponentInChildren<SuperTextMesh>();
+                    var stm = playerMarkers[i].superTextMeshComponent;
                     if (stm != null)
                     {
                         if(String.IsNullOrEmpty(rotationData.playerNames[i]))
@@ -270,6 +273,8 @@ namespace VolleyballRotation
                         else                       
                             stm.text = rotationData.playerNames[i];
                     }
+
+                    playerMarkers[i].UpdateBoxColliderToMatchSuperTextMesh();
 
                 }
 
@@ -283,14 +288,11 @@ namespace VolleyballRotation
                 Debug.LogWarning($"No DataPosition found for situation={currentSituation} and rotation={currentRotation} \n{dataPositionString}");
             }
 
-            for(int i = 0; i < playerMarkers.Count; i++)
+            for(int i = 0; i < playerMarkerGOs.Count; i++)
             {
-                var stm = playerMarkers[i].GetComponentInChildren<SuperTextMesh>();
-                FaceCamera(stm.gameObject,true);
+                FaceCamera(playerMarkers[i].gameObject,true);
             }
         }
-        //public Color arrowHeadColor = Color.magenta;
-        //public Color arrowSegmentColor = Color.black;
 
         private void UpdateNextPositionArrows(int currentRotation, Situation currentSituation, int nextRotation, Situation nextSituation)
         {
@@ -306,7 +308,7 @@ namespace VolleyballRotation
 
                 for(int playerIndex = 0; playerIndex < 6; playerIndex++)
                 {
-                    AnimatedArrowRenderer arrowRenderer = playerMarkers[playerIndex].GetComponentInChildren<AnimatedArrowRenderer>();
+                    AnimatedArrowRenderer arrowRenderer = playerMarkers[playerIndex].arrowRenderer;
 
                     if(arrowRenderer != null)
                     {
@@ -346,7 +348,7 @@ namespace VolleyballRotation
                 // TODO - Hide the arrows
                 for (int playerIndex = 0; playerIndex < 6; playerIndex++)
                 {
-                    AnimatedArrowRenderer arrowRenderer = playerMarkers[playerIndex].GetComponentInChildren<AnimatedArrowRenderer>();
+                    AnimatedArrowRenderer arrowRenderer = playerMarkers[playerIndex].arrowRenderer;
                     if (arrowRenderer != null)
                     {
                         //arrowRenderer.enabled = false;
@@ -442,9 +444,9 @@ namespace VolleyballRotation
 
         private void UpdateArrows()
         {
-            for (int i = 0; i < playerMarkers.Count; i++)
+            for (int i = 0; i < playerMarkerGOs.Count; i++)
             {
-                AnimatedArrowRenderer arrowRenderer = playerMarkers[i].GetComponentInChildren<AnimatedArrowRenderer>();
+                AnimatedArrowRenderer arrowRenderer = playerMarkers[i].arrowRenderer;
                 int playerNumber = i + 1;
                 if (arrowRenderer != null)
                 {
@@ -610,12 +612,12 @@ namespace VolleyballRotation
             int indexOfPlayerInPosition4 = (indexOfPlayerInPosition0 + 4) % 6;
             int indexOfPlayerInPosition5 = (indexOfPlayerInPosition0 + 5) % 6;
 
-            rotatedPlayers.Add(playerMarkers[indexOfPlayerInPosition0].GetComponent<PlayerMarker>());
-            rotatedPlayers.Add(playerMarkers[indexOfPlayerInPosition1].GetComponent<PlayerMarker>());
-            rotatedPlayers.Add(playerMarkers[indexOfPlayerInPosition2].GetComponent<PlayerMarker>());
-            rotatedPlayers.Add(playerMarkers[indexOfPlayerInPosition3].GetComponent<PlayerMarker>());
-            rotatedPlayers.Add(playerMarkers[indexOfPlayerInPosition4].GetComponent<PlayerMarker>());
-            rotatedPlayers.Add(playerMarkers[indexOfPlayerInPosition5].GetComponent<PlayerMarker>());
+            rotatedPlayers.Add(playerMarkers[indexOfPlayerInPosition0]);
+            rotatedPlayers.Add(playerMarkers[indexOfPlayerInPosition1]);
+            rotatedPlayers.Add(playerMarkers[indexOfPlayerInPosition2]);
+            rotatedPlayers.Add(playerMarkers[indexOfPlayerInPosition3]);
+            rotatedPlayers.Add(playerMarkers[indexOfPlayerInPosition4]);
+            rotatedPlayers.Add(playerMarkers[indexOfPlayerInPosition5]);
 
             return rotatedPlayers;
         }

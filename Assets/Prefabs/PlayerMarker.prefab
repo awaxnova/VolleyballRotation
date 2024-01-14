@@ -54,10 +54,10 @@ MonoBehaviour:
   showTimingFoldout: 0
   showFunctionalityFoldout: 0
   showAudioFoldout: 0
-  showEventFoldout: 0
+  showEventFoldout: 1
   showBetaFoldout: 0
   info:
-  - pos: {x: 0, y: -1, z: 0}
+  - pos: {x: -0.484375, y: -0.5, z: 0}
     offset: {x: 0, y: 0, z: 0}
     lineSpacing: 1
     isEndOfParagraph: 0
@@ -68,7 +68,7 @@ MonoBehaviour:
     indent: 0
     drawAnimData: {fileID: 11400000, guid: 79b3a58975db94dc0878c84bf4315875, type: 2}
     size: {x: 1, y: 1}
-    alignment: 0
+    alignment: 1
     drawOrder: 0
     ev: []
     ev2: []
@@ -97,7 +97,7 @@ MonoBehaviour:
     chSize: 64
     submeshChange: 0
     invoked: 1
-  - pos: {x: 0.671875, y: -1, z: 0}
+  - pos: {x: 0.1875, y: -0.5, z: 0}
     offset: {x: 0, y: -0.2, z: 0}
     lineSpacing: 1
     isEndOfParagraph: 0
@@ -108,7 +108,7 @@ MonoBehaviour:
     indent: 0
     drawAnimData: {fileID: 11400000, guid: 79b3a58975db94dc0878c84bf4315875, type: 2}
     size: {x: 0.5, y: 0.5}
-    alignment: 0
+    alignment: 1
     drawOrder: 0
     ev: []
     ev2: []
@@ -137,7 +137,7 @@ MonoBehaviour:
     chSize: 64
     submeshChange: 0
     invoked: 1
-  - pos: {x: 0.953125, y: -1, z: 0}
+  - pos: {x: 0.46875, y: -0.5, z: 0}
     offset: {x: 0, y: 0, z: 0}
     lineSpacing: 1
     isEndOfParagraph: 0
@@ -148,7 +148,7 @@ MonoBehaviour:
     indent: 0
     drawAnimData: {fileID: 11400000, guid: 79b3a58975db94dc0878c84bf4315875, type: 2}
     size: {x: 1, y: 1}
-    alignment: 0
+    alignment: 1
     drawOrder: 0
     ev: []
     ev2: []
@@ -221,36 +221,36 @@ MonoBehaviour:
   lineSpacing: 1
   characterSpacing: 0
   tabSize: 4
-  autoWrap: 12
+  autoWrap: 4.9
   uiWrap: 1
   uiLimit: 1
   breakText: 0
-  insertHyphens: 1
-  anchor: 0
-  alignment: 0
+  insertHyphens: 0
+  anchor: 4
+  alignment: 1
   verticalLimit: 0
   verticalLimitMode: 2
   leftoverText: 
   textMaterial: {fileID: 2100000, guid: e0195eb33d5b847d4a1ad54c04efc088, type: 2}
   textMesh: {fileID: 0}
-  rawTopLeftBounds: {x: 0, y: 0, z: 0}
-  rawBottomRightBounds: {x: -12, y: 1, z: 0}
+  rawTopLeftBounds: {x: 2.45, y: -0.5, z: 0}
+  rawBottomRightBounds: {x: -2.45, y: 0.5, z: 0}
   rawBottomRightTextBounds: {x: 0.96875, y: -1, z: 0}
-  topLeftBounds: {x: 0, y: 0, z: 0}
-  topRightBounds: {x: 12, y: 0, z: 0}
-  bottomLeftBounds: {x: 0, y: -1, z: 0}
-  bottomRightBounds: {x: 12, y: -1, z: 0}
-  centerBounds: {x: 6, y: -0.5, z: 0}
-  topLeftTextBounds: {x: 0, y: 0, z: 0}
-  topRightTextBounds: {x: 0.96875, y: 0, z: 0}
-  bottomLeftTextBounds: {x: 0, y: -1, z: 0}
-  bottomRightTextBounds: {x: 0.96875, y: -1, z: 0}
-  centerTextBounds: {x: 0.484375, y: -0.5, z: 0}
-  finalTopLeftTextBounds: {x: 0, y: 0, z: 0}
-  finalTopRightTextBounds: {x: 0.96875, y: 0, z: 0}
-  finalBottomLeftTextBounds: {x: 0, y: -1, z: 0}
-  finalBottomRightTextBounds: {x: 0.96875, y: -1, z: 0}
-  finalCenterTextBounds: {x: 0.484375, y: -0.5, z: 0}
+  topLeftBounds: {x: -2.45, y: 0.5, z: 0}
+  topRightBounds: {x: 2.45, y: 0.5, z: 0}
+  bottomLeftBounds: {x: -2.45, y: -0.5, z: 0}
+  bottomRightBounds: {x: 2.45, y: -0.5, z: 0}
+  centerBounds: {x: 0, y: 0, z: 0}
+  topLeftTextBounds: {x: -0.484375, y: 0.5, z: 0}
+  topRightTextBounds: {x: 0.484375, y: 0.5, z: 0}
+  bottomLeftTextBounds: {x: -0.484375, y: -0.5, z: 0}
+  bottomRightTextBounds: {x: 0.484375, y: -0.5, z: 0}
+  centerTextBounds: {x: 0, y: 0, z: 0}
+  finalTopLeftTextBounds: {x: -0.484375, y: 0.5, z: 0}
+  finalTopRightTextBounds: {x: 0.484375, y: 0.5, z: 0}
+  finalBottomLeftTextBounds: {x: -0.484375, y: -0.5, z: 0}
+  finalBottomRightTextBounds: {x: 0.484375, y: -0.5, z: 0}
+  finalCenterTextBounds: {x: 0, y: 0, z: 0}
   unwrappedBottomRightTextBounds: {x: 0.953125, y: -1, z: 0}
   onCompleteEvent:
     m_PersistentCalls:
@@ -516,6 +516,57 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b35396bcfa0ded740a06e80c91a1c0eb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!1 &2178168163151175332
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 8011771923008918429}
+  - component: {fileID: 5423203343384536861}
+  m_Layer: 0
+  m_Name: STMTrackerRect
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!224 &8011771923008918429
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2178168163151175332}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1330381394282397509}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0.5, y: 0.5}
+  m_AnchorMax: {x: 0.5, y: 0.5}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 2, y: 2}
+  m_Pivot: {x: 0.5, y: 0.5}
+--- !u!114 &5423203343384536861
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2178168163151175332}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0d30a99236c8cc646b22c8b4873a1b05, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  stm: {fileID: 3105951716880449181}
+  padding: {x: 0.5, y: 0.5}
+  rectToMatch: 1
 --- !u!1 &9063309631332321280
 GameObject:
   m_ObjectHideFlags: 0
@@ -528,7 +579,7 @@ GameObject:
   - component: {fileID: 3454382971112389166}
   - component: {fileID: 8041880755183869353}
   - component: {fileID: 6799436805826504594}
-  - component: {fileID: 5361820965675089968}
+  - component: {fileID: -1973207012334485700}
   m_Layer: 0
   m_Name: PlayerMarker
   m_TagString: Untagged
@@ -551,6 +602,7 @@ Transform:
   m_Children:
   - {fileID: 5342254786324316240}
   - {fileID: 1561960598131926955}
+  - {fileID: 8011771923008918429}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!33 &3454382971112389166
@@ -616,15 +668,15 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   playerNumber: 1
---- !u!61 &5361820965675089968
-BoxCollider2D:
+  superTextMeshComponent: {fileID: 0}
+  arrowRenderer: {fileID: 0}
+--- !u!65 &-1973207012334485700
+BoxCollider:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 9063309631332321280}
-  m_Enabled: 1
-  m_Density: 1
   m_Material: {fileID: 0}
   m_IncludeLayers:
     serializedVersion: 2
@@ -633,31 +685,9 @@ BoxCollider2D:
     serializedVersion: 2
     m_Bits: 0
   m_LayerOverridePriority: 0
-  m_ForceSendLayers:
-    serializedVersion: 2
-    m_Bits: 4294967295
-  m_ForceReceiveLayers:
-    serializedVersion: 2
-    m_Bits: 4294967295
-  m_ContactCaptureLayers:
-    serializedVersion: 2
-    m_Bits: 4294967295
-  m_CallbackLayers:
-    serializedVersion: 2
-    m_Bits: 4294967295
   m_IsTrigger: 0
-  m_UsedByEffector: 0
-  m_UsedByComposite: 0
-  m_Offset: {x: 1.12, y: -0.69}
-  m_SpriteTilingProperty:
-    border: {x: 0, y: 0, z: 0, w: 0}
-    pivot: {x: 0, y: 0}
-    oldSize: {x: 0, y: 0}
-    newSize: {x: 0, y: 0}
-    adaptiveTilingThreshold: 0
-    drawMode: 0
-    adaptiveTiling: 0
-  m_AutoTiling: 0
-  serializedVersion: 2
-  m_Size: {x: 2.92, y: 1.73}
-  m_EdgeRadius: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 1.66, y: 1.51, z: 1}
+  m_Center: {x: 0, y: 0, z: 0}

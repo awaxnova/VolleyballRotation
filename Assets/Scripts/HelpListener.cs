@@ -1,6 +1,9 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Assertions;
+using UnityEngine.UI;
 
 /// <summary>
 /// Put this on a GameObject that wants to be enabled/disabled when the help is enabled/disabled.
@@ -8,6 +11,19 @@ using UnityEngine;
 public class HelpListener : MonoBehaviour
 {
     public HelpType helpType;
+
+    [Header("Set this to the next HelpListener in the chain, or leave it null if this is the last in the chain.")]
+    public HelpListener nextHelpListener;
+
+    [Header("On the last HelpListener in the chain, set this to the first HelpListener in the chain, or leave it null if we don't want to allow the help chain to restart.")]
+    public HelpListener beginningOfChainToReArm;
+
+    public Button[] activators;
+    public bool startActive = false;
+    public bool startArmed = false;
+    public Material buttonIndicatorMaterial;
+    private Material[] buttonMaterials;
+    private bool isArmed = false;
 
     // Start is called before the first frame update
     void Start()
@@ -19,12 +35,29 @@ public class HelpListener : MonoBehaviour
         // and track the enable state of the help channel, by enabling/disabling the GameObject.
         HelpManager.Instance.SetHelpCallback(helpType, HelpUpdated);
 
-        //// Find all GameObjects with a HelpListener component, and subscribe to the HelpUpdated delegate
-        //HelpListener[] helpListeners = FindObjectsOfType<HelpListener>();
-        //foreach (HelpListener helpListener in helpListeners)
-        //{
-        //    SetHelpCallback(helpListener.helpType, helpListener.HelpUpdated);
-        //}
+        // If this help item should start active, then activate it
+        gameObject.SetActive(startActive);
+
+        if (startArmed)
+            ReArm();
+
+        // populate the buttonMaterials array
+
+        buttonMaterials = new Material[activators.Length];
+
+        for(int activatorIdx= 0; activatorIdx < activators.Length; activatorIdx++)
+        {
+            Button activator = activators[activatorIdx];
+            // Save the original material from the Image component attached to the Button.
+            // This is so we can restore it later.
+
+            // Get the Image component attached to the Button
+            Image image = activator.GetComponent<Image>();
+            // Get the material from the Image component
+            Material material = image.material;
+            // Save the material
+            buttonMaterials[activatorIdx] = material;
+        }
     }
 
     // Update is called once per frame
@@ -44,7 +77,77 @@ public class HelpListener : MonoBehaviour
         if (helpType == this.helpType)
         {
             Debug.Log($"HelpUpdated: {helpType} {enable}");
-            gameObject.SetActive(enable);
+            if(isArmed)
+            {
+                ActivateAsNext();
+                isArmed = false;
+            }
         }
+    }
+
+    public void ActivateAsNext()
+    {
+        gameObject.SetActive(true);
+        for(int activatorIndex = 0; activatorIndex < activators.Length; activatorIndex++)
+        {
+            Button activator = activators[activatorIndex];
+            activator.onClick.AddListener(OnActivated);
+            SetMaterial(activatorIndex);
+        }
+    }
+
+    private void SetMaterial(int activatorIndex)
+    {
+        Button activator = activators[activatorIndex];
+        // Get the Image component attached to the Button
+        Image image = activator.GetComponent<Image>();
+
+        image.material = buttonIndicatorMaterial;
+    }
+
+    public void Deactivate()
+    {
+
+        for(int activatorIndex = 0; activatorIndex < activators.Length; activatorIndex++)            
+        {
+            Button activator = activators[activatorIndex];
+            activator.onClick.RemoveListener(OnActivated);
+            RestoreMaterial(activatorIndex);
+        }
+        gameObject.SetActive(false);
+    }
+
+    private void RestoreMaterial(int activatorIndex)
+    {
+        Button activator = activators[activatorIndex];
+        Image image = activator.GetComponent<Image>();
+        image.material = buttonMaterials[activatorIndex];
+    }
+
+    /// <summary>
+    /// This should be called by a UI element when it is activated, and will inform this Help item that it has been activated, and can proceed to the next in the chain, or turn off.
+    /// </summary>
+    public void OnActivated()
+    {
+        Debug.Log($"OnActivated: {helpType}");
+        Deactivate();
+
+        if (nextHelpListener != null)
+            nextHelpListener?.ActivateAsNext();
+        else
+            ReArmBeginningOfChain();
+    }
+
+    /// <summary>
+    /// Allow this to listen for the Help button event again.
+    /// </summary>
+    public void ReArm()
+    {
+          isArmed = true;
+    }
+
+    private void ReArmBeginningOfChain()
+    {
+        beginningOfChainToReArm?.ReArm();
     }
 }

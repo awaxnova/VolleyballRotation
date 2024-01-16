@@ -709,6 +709,36 @@ public class UIPlayerSettings : MonoBehaviour
         }
     }
 
+    public bool isInSettingsMenu()
+    {
+        // If enteringSettingsMenu is true, then we're in the settings menu.
+        // else we're not in the settings menu.
+        
+        return enteringSettingsMenu;
+    }
+
+    public bool isInSettingsGeneralMenu()
+    {
+        // If enteringSettingsMenu is true, then we're in the settings menu.
+        // else we're not in the settings GENERAL menu.
+        
+        return isInSettingsMenu() && toggleGeneral.isOn;
+    }
+
+    public bool isInSettingsRotationMenu()
+    {
+        // if we're in the settings menu and the general toggle is off, and at least one rotation toggle is on, then we're in the settings rotation menu.
+
+        return isInSettingsMenu() && !toggleGeneral.isOn && (getQuantityRotationTogglesSelected() > 0);       
+    }
+
+    public bool isInSettingsPlayerMenu()
+    {
+        // if we're in the settings menu and the general toggle is off, and at least one player toggle is on, then we're in the settings player menu.
+
+        return isInSettingsMenu() && !toggleGeneral.isOn && (getQuantityPlayerTogglesSelected() > 0);
+    }
+
     /// <summary>
     /// This should revert any settings before exiting via the settings button.
     /// </summary>

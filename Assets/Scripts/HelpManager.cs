@@ -49,6 +49,15 @@ public class HelpManager : MonoBehaviour
         }
 
         uiPlayerSettings = FindObjectOfType<UIPlayerSettings>();
+
+        // Enable All HelpListeners that are set to start active
+        HelpListener[] helpListeners = FindObjectsOfType<HelpListener>(true);
+        foreach (HelpListener helpListener in helpListeners)
+        {
+            // Subscribe to the HelpManager's delegate to be notified when the help is enabled or disabled,
+            // and track the enable state of the help channel, by enabling/disabling the GameObject.
+            HelpManager.Instance.SetHelpCallback(helpListener.helpType, helpListener.HelpUpdated);
+        }
     }
 
     // Update is called once per frame

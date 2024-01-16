@@ -31,10 +31,6 @@ public class HelpListener : MonoBehaviour
         // Check the enable state of the help channel, and enable/disable the GameObject
         gameObject.SetActive(HelpManager.Instance.GetHelpType(helpType));
 
-        // Subscribe to the HelpManager's delegate to be notified when the help is enabled or disabled,
-        // and track the enable state of the help channel, by enabling/disabling the GameObject.
-        HelpManager.Instance.SetHelpCallback(helpType, HelpUpdated);
-
         // If this help item should start active, then activate it
         gameObject.SetActive(startActive);
 
@@ -76,7 +72,7 @@ public class HelpListener : MonoBehaviour
     {
         if (helpType == this.helpType)
         {
-            Debug.Log($"HelpUpdated: {helpType} {enable}");
+            Debug.Log($"HelpUpdated: {helpType} {enable} Armed: {isArmed}");
             if(isArmed)
             {
                 ActivateAsNext();
@@ -87,7 +83,14 @@ public class HelpListener : MonoBehaviour
 
     public void ActivateAsNext()
     {
-        gameObject.SetActive(true);
+       
+        // Activate all children
+        Transform[] children = GetComponentsInChildren<Transform>(true);
+        foreach (Transform child in children)
+        {
+            child.gameObject.SetActive(true);
+        }
+
         for(int activatorIndex = 0; activatorIndex < activators.Length; activatorIndex++)
         {
             Button activator = activators[activatorIndex];
@@ -114,7 +117,12 @@ public class HelpListener : MonoBehaviour
             activator.onClick.RemoveListener(OnActivated);
             RestoreMaterial(activatorIndex);
         }
-        gameObject.SetActive(false);
+        // Deactivate all children
+        Transform[] children = GetComponentsInChildren<Transform>(true);
+        foreach (Transform child in children)
+        {
+            child.gameObject.SetActive(false);
+        }
     }
 
     private void RestoreMaterial(int activatorIndex)

@@ -106,8 +106,9 @@ public class HelpManager : MonoBehaviour
     public void OnHelpButtonClicked()
     {
         // If we're in the settings screen, toggle the settings help based on whether the general help is enabled
-        if(uiPlayerSettings.isInSettingsGeneralMenu())
+        if (uiPlayerSettings.isInSettingsGeneralMenu())
         {
+            Debug.Log($"HelpManager.OnHelpButtonClicked: isInSettingsGeneralMenu");
             ToggleHelpType(HelpType.SettingsGeneral);
             SetHelpType(HelpType.SettingsPlayer, false);
             SetHelpType(HelpType.SettingsRotation, false);
@@ -115,17 +116,9 @@ public class HelpManager : MonoBehaviour
             SetHelpType(HelpType.Rotation, false);
             SetHelpType(HelpType.Situation, false);
         }
-        else if(uiPlayerSettings.isInSettingsPlayerMenu())
+        else if (uiPlayerSettings.isInSettingsRotationMenu())
         {
-            SetHelpType(HelpType.SettingsGeneral, false);
-            ToggleHelpType(HelpType.SettingsPlayer);
-            SetHelpType(HelpType.SettingsRotation, false);
-            SetHelpType(HelpType.Position, false);
-            SetHelpType(HelpType.Rotation, false);
-            SetHelpType(HelpType.Situation, false);
-        }
-        else if(uiPlayerSettings.isInSettingsRotationMenu())
-        {
+            Debug.Log($"HelpManager.OnHelpButtonClicked: isInSettingsRotationMenu");
             SetHelpType(HelpType.SettingsGeneral, false);
             SetHelpType(HelpType.SettingsPlayer, false);
             ToggleHelpType(HelpType.SettingsRotation);
@@ -133,14 +126,29 @@ public class HelpManager : MonoBehaviour
             SetHelpType(HelpType.Rotation, false);
             SetHelpType(HelpType.Situation, false);
         }
-        else
+        else if (uiPlayerSettings.isInSettingsPlayerMenu())
         {
+            Debug.Log($"HelpManager.OnHelpButtonClicked: isInSettingsPlayerMenu");
+            SetHelpType(HelpType.SettingsGeneral, false);
+            ToggleHelpType(HelpType.SettingsPlayer);
+            SetHelpType(HelpType.SettingsRotation, false);
+            SetHelpType(HelpType.Position, false);
+            SetHelpType(HelpType.Rotation, false);
+            SetHelpType(HelpType.Situation, false);
+        }
+        else if (!uiPlayerSettings.isInSettingsMenu())
+        {
+            Debug.Log($"HelpManager.OnHelpButtonClicked: isInMainActivity");
             SetHelpType(HelpType.SettingsGeneral, false);
             SetHelpType(HelpType.SettingsPlayer, false);
             SetHelpType(HelpType.SettingsRotation, false);
             ToggleHelpType(HelpType.Position);
             ToggleHelpType(HelpType.Rotation);
             ToggleHelpType(HelpType.Situation);
+        }
+        else
+        { 
+            Debug.Log($"HelpManager.OnHelpButtonClicked: isInSettingsMenu, no target");
         }
     }
 }

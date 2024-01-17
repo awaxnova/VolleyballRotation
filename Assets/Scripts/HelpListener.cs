@@ -18,6 +18,8 @@ public class HelpListener : MonoBehaviour
     [Header("On the last HelpListener in the chain, set this to the first HelpListener in the chain, or leave it null if we don't want to allow the help chain to restart.")]
     public HelpListener beginningOfChainToReArm;
 
+    public HelpFilter positionFilter;
+
     public Button[] activators;
     public bool startActive = false;
     public bool startArmed = false;
@@ -96,6 +98,12 @@ public class HelpListener : MonoBehaviour
             Button activator = activators[activatorIndex];
             activator.onClick.AddListener(OnActivated);
             SetMaterial(activatorIndex);
+        }
+
+        // If we have a position filter, then set the position of this help item to the position of the filter
+        if (positionFilter != null)
+        {
+            transform.position = positionFilter.GetPosition();
         }
     }
 

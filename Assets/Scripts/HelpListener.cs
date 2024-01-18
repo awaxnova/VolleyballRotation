@@ -26,7 +26,7 @@ public class HelpListener : MonoBehaviour
     public Material buttonIndicatorMaterial;
     private Material[] buttonMaterials;
     private bool isArmed = false;
-
+    private GameObject originalParent;
     // Start is called before the first frame update
     void Start()
     {
@@ -103,7 +103,16 @@ public class HelpListener : MonoBehaviour
         // If we have a position filter, then set the position of this help item to the position of the filter
         if (positionFilter != null)
         {
-            transform.position = positionFilter.GetPosition();
+            //RectTransform rectTransform = GetComponent<RectTransform>();
+            ////rectTransform.anchoredPosition = positionFilter.GetPosition(transform.gameObject);
+            //transform.localPosition = positionFilter.GetPosition(transform.gameObject);
+
+            var filteredObject = positionFilter.filterForGameObject();
+            // set my parent to the parent of the filtered object
+            originalParent = transform.parent.gameObject;
+            transform.SetParent(filteredObject.transform.parent);
+            // set my localposition to the localposition of the filtered object
+            transform.localPosition = filteredObject.transform.localPosition;
         }
     }
 
@@ -125,12 +134,20 @@ public class HelpListener : MonoBehaviour
             activator.onClick.RemoveListener(OnActivated);
             RestoreMaterial(activatorIndex);
         }
+
+        // Restore the parent of this help item
+        if (originalParent != null)
+        {
+            transform.SetParent(originalParent.transform);
+        }
+
         // Deactivate all children
         Transform[] children = GetComponentsInChildren<Transform>(true);
         foreach (Transform child in children)
         {
             child.gameObject.SetActive(false);
         }
+
     }
 
     private void RestoreMaterial(int activatorIndex)

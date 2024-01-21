@@ -39,7 +39,6 @@ public abstract class HelpFilter : MonoBehaviour
         RectTransform targetRectTransform = target.GetComponent<RectTransform>();
         Assert.IsTrue(targetRectTransform != null);
 
-        /*
         // Get the screen space coordinates of the source object
         Vector3[] sourceCorners = new Vector3[4];
         sourceRectTransform.GetWorldCorners(sourceCorners);
@@ -58,13 +57,14 @@ public abstract class HelpFilter : MonoBehaviour
         
         // Return the new position
         return targetPosition;
-        */
 
+        /*
         Vector3 sourceWorldPos = sourceRectTransform.position;
         Vector3 targetLocalPos = targetRectTransform.parent.InverseTransformPoint(sourceWorldPos);
 
         //targetRectTransform.anchoredPosition = targetLocalPos;
 
         return targetLocalPos;
+        */
     }
 }

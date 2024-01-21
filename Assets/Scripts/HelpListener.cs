@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Assertions;
 using UnityEngine.UI;
@@ -10,6 +11,12 @@ using UnityEngine.UI;
 /// </summary>
 public class HelpListener : MonoBehaviour
 {
+    /// <summary>
+    /// This is the UI Panel in the scene that will be used to obscure the scene when the help is enabled.
+    /// It has a shader that uses the stencil buffer to allow the help to be seen through the panel.
+    /// </summary>
+    public GameObject helpOccluderPanel;
+
     public HelpType helpType;
 
     [Header("Set this to the next HelpListener in the chain, or leave it null if this is the last in the chain.")]
@@ -27,6 +34,7 @@ public class HelpListener : MonoBehaviour
     private Material[] buttonMaterials;
     private bool isArmed = false;
     private GameObject originalParent;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -114,6 +122,9 @@ public class HelpListener : MonoBehaviour
             // set my localposition to the localposition of the filtered object
             transform.localPosition = filteredObject.transform.localPosition;
         }
+        
+        // Show the occluder panel
+        ShowOccluderPanel(true);
     }
 
     private void SetMaterial(int activatorIndex)
@@ -148,6 +159,8 @@ public class HelpListener : MonoBehaviour
             child.gameObject.SetActive(false);
         }
 
+        // Hide the occluder panel
+        ShowOccluderPanel(false);
     }
 
     private void RestoreMaterial(int activatorIndex)
@@ -182,5 +195,10 @@ public class HelpListener : MonoBehaviour
     private void ReArmBeginningOfChain()
     {
         beginningOfChainToReArm?.ReArm();
+    }
+
+    private void ShowOccluderPanel(bool enable)
+    {         
+        helpOccluderPanel.SetActive(enable);      
     }
 }

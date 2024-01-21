@@ -13,6 +13,11 @@ public abstract class HelpFilter : MonoBehaviour
     /// <returns></returns>
     public abstract GameObject filterForGameObject ();
     
+    /// <summary>
+    /// This is called to reinitialize the HelpChain.
+    /// </summary>
+    public abstract void RestartHelpChain();
+
     public Vector3 GetPosition(GameObject target)
     {
         //return filterForGameObject().transform.position;

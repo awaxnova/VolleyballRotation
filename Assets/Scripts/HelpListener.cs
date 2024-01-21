@@ -80,6 +80,12 @@ public class HelpListener : MonoBehaviour
     /// <param name="enable"></param>
     public void HelpUpdated(HelpType helpType, bool enable)
     {
+        if(positionFilter != null)
+        {
+            //Debug.Log($"HelpUpdated: {helpType} {enable} Armed: {isArmed}");
+            positionFilter.RestartHelpChain();
+        }
+
         if (helpType == this.helpType)
         {
             Debug.Log($"HelpUpdated: {helpType} {enable} Armed: {isArmed}");

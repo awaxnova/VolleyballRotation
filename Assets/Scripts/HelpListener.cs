@@ -80,15 +80,16 @@ public class HelpListener : MonoBehaviour
     /// <param name="enable"></param>
     public void HelpUpdated(HelpType helpType, bool enable)
     {
-        if(positionFilter != null)
-        {
-            //Debug.Log($"HelpUpdated: {helpType} {enable} Armed: {isArmed}");
-            positionFilter.RestartHelpChain();
-        }
 
-        if (helpType == this.helpType)
+        if (enable && (helpType == this.helpType))
         {
-            Debug.Log($"HelpUpdated: {helpType} {enable} Armed: {isArmed}");
+            Debug.Log($"HelpListener.HelpUpdated: invoking:{helpType} enable:{enable}  (thisIs:{this.helpType} Armed: {this.isArmed} {this.gameObject.name})");
+            if(positionFilter != null)
+            {
+                //Debug.Log($"HelpUpdated: {helpType} {enable} Armed: {isArmed}");
+                positionFilter.RestartHelpChain();
+            }
+
             if(isArmed)
             {
                 ActivateAsNext();

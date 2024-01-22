@@ -73,6 +73,8 @@ public class HelpManager : MonoBehaviour
 
         // call the delegate
         helpUpdatedDelegates[(int)helpType]?.Invoke(helpType, enable);
+
+        Debug.Log($"HelpManager.SetHelpType: {helpType} = {enable}");
     }
 
     public bool GetHelpType(HelpType helpType)
@@ -82,6 +84,7 @@ public class HelpManager : MonoBehaviour
 
     public void ClearHelpTypes()
     {
+        Debug.Log($"HelpManager.ClearHelpTypes");
         for (int i = 0; i < helpEnabled.Length; i++)
         {
             SetHelpType((HelpType)i, false);
@@ -90,6 +93,7 @@ public class HelpManager : MonoBehaviour
 
     public void ToggleHelpType(HelpType helpType)
     {
+        Debug.Log($"HelpManager.ToggleHelpType: {helpType} From {helpEnabled[(int)helpType]} -> {!helpEnabled[(int)helpType]}");
         SetHelpType(helpType, !helpEnabled[(int)helpType]);
     }
 
@@ -100,6 +104,8 @@ public class HelpManager : MonoBehaviour
     /// <param name="helpUpdatedDelegate"></param>
     public void SetHelpCallback(HelpType helpType, HelpUpdatedDelegate helpUpdatedDelegate)
     {
+        Debug.Log($"HelpManager.SetHelpCallback: {helpType}");
+
         helpUpdatedDelegates[(int)helpType] += helpUpdatedDelegate;
     }
 

@@ -16,19 +16,19 @@ MonoBehaviour:
   rotationNumber: 1
   situation: 0
   positions:
-  - {x: 7.31, y: 1.2, z: 0.9}
-  - {x: 6.74, y: 1.2, z: 6.47}
-  - {x: 4.14, y: 1.2, z: 6.58}
-  - {x: 0.98, y: 1.2, z: 6.6}
-  - {x: 0.91, y: 1.2, z: 1.31}
-  - {x: 3.92, y: 1.2, z: 1.1}
+  - {x: 7.5610695, y: 1.2, z: 2.1226566}
+  - {x: 8.14068, y: 1.2, z: 6.207433}
+  - {x: 4.8667936, y: 1.2, z: 6.3263073}
+  - {x: 1.4841615, y: 1.2, z: 6.4190674}
+  - {x: 1.7340059, y: 1.2, z: 2.5200124}
+  - {x: 4.6301756, y: 1.2, z: 1.9494485}
   playerNamesOverrides:
   - 
   - 
-  - <c=blue>M<sub>1</sub>
+  - <c=blue>Mtt<sub>M1</sub>
   - 
   - 
-  - <c=blue>M<sub>2</sub>/L
+  - <c=blue>Ara<sub>Lib</sub>
   arrowTypes: 010000000000000000000000010000000000000000000000
   segmentTypes: 010000000200000002000000010000000200000002000000
   arrowHeadColors:
@@ -59,11 +59,29 @@ MonoBehaviour:
   - 0.31
   - 0.31
   - 0.31
-  positionMarkers: []
+  positionMarkers:
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
   positionMarkerPrefab: {fileID: 9063309631332321280, guid: 5ea2a9050d79d184591ca717664b96f7, type: 3}
   allowPositionOverwrite: 0
   allowPositionMarkerOverwrite: 0
   playerNameOptions:
+  - <c=gold>I<sub>bella</sub>
+  - <c=gold>M<sub>ryn</sub>
+  - <c=gold>C<sub>ora</sub>
+  - <c=blue>M<sub>ttie</sub>
+  - <c=blue>I<sub>sla</sub>
+  - <c=blue>J<sub>ulia</sub>
+  - <c=red>L<sub>exi</sub>
+  - <c=red>S<sub>rra</sub>
+  - <c=red>K<sub>c</sub>
+  - <c=purple>L<sub>illi</sub>
+  - <c=purple>T<sub>ori</sub>
+  - <c=tak>A<sub>riah</sub>
   - <c=blue>X<sub>1</sub>
   - <c=yellow>X<sub>1</sub>
   - <c=red>X<sub>1</sub>
@@ -73,12 +91,4 @@ MonoBehaviour:
   - <c=lime>X<sub>1</sub>
   - <c=gold>X<sub>1</sub>
   - <c=tak>X<sub>1</sub>
-  - <c=gold>M<sub>ryn</sub>
-  - <c=gold>I<sub>blla</sub>
-  - <c=blue>M<sub>ddy</sub>
-  - <c=blue>I<sub>sla</sub>
-  - <c=blue>J<sub>ulia</sub>
-  - <c=red>L<sub>exi</sub>
-  - <c=red>S<sub>rra</sub>
-  - <c=red>K<sub>c</sub>
   enableDestroyDuringCleanUp: 0

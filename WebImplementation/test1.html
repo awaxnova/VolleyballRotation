@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Text Input and Display</title>
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            font-family: Arial, sans-serif;
+        }
+        .container {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            grid-template-rows: repeat(2, 1fr);
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        input {
+            padding: 10px;
+            font-size: 16px;
+            text-align: center;
+        }
+        .display-area {
+            width: 300px;
+            height: 200px;
+            background-color: black;
+            color: white;
+            position: relative;
+            overflow: hidden;
+        }
+        .text-box {
+            position: absolute;
+            cursor: grab;
+            user-select: none;
+            font-size: 16px;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div>
+        <div class="container">
+            <input type="text" id="input1" placeholder="Input 1">
+            <input type="text" id="input2" placeholder="Input 2">
+            <input type="text" id="input3" placeholder="Input 3">
+            <input type="text" id="input4" placeholder="Input 4">
+            <input type="text" id="input5" placeholder="Input 5">
+            <input type="text" id="input6" placeholder="Input 6">
+        </div>
+        <div class="display-area">
+            <div id="text1" class="text-box" style="top: 20px; left: 20px;">Input 1</div>
+            <div id="text2" class="text-box" style="top: 20px; left: 120px;">Input 2</div>
+            <div id="text3" class="text-box" style="top: 20px; left: 220px;">Input 3</div>
+            <div id="text4" class="text-box" style="top: 150px; left: 20px;">Input 4</div>
+            <div id="text5" class="text-box" style="top: 150px; left: 120px;">Input 5</div>
+            <div id="text6" class="text-box" style="top: 150px; left: 220px;">Input 6</div>
+        </div>
+    </div>
+
+    <script>
+        document.querySelectorAll('input').forEach((input, index) => {
+            input.addEventListener('input', function() {
+                document.getElementById('text' + (index + 1)).textContent = this.value;
+            });
+        });
+
+        let dragging = null;
+        let offsetX = 0, offsetY = 0;
+
+        document.querySelectorAll('.text-box').forEach(textBox => {
+            textBox.addEventListener('mousedown', function(event) {
+                dragging = textBox;
+                dragging.style.cursor = 'grabbing';
+
+                // Calculate the offset of the mouse click within the element
+                offsetX = event.clientX - dragging.getBoundingClientRect().left;
+                offsetY = event.clientY - dragging.getBoundingClientRect().top;
+            });
+
+            document.addEventListener('mousemove', function(event) {
+                if (dragging) {
+                    // Calculate the new position of the text box relative to its parent
+                    let parentRect = dragging.parentElement.getBoundingClientRect();
+                    let newX = event.clientX - parentRect.left - offsetX;
+                    let newY = event.clientY - parentRect.top - offsetY;
+
+                    // Apply the new position
+                    dragging.style.left = newX + 'px';
+                    dragging.style.top = newY + 'px';
+                }
+            });
+
+            document.addEventListener('mouseup', function() {
+                if (dragging) {
+                    dragging.style.cursor = 'grab';
+                    dragging = null;
+                }
+            });
+        });
+    </script>
+</body>
+</html>

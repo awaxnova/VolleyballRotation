@@ -39,18 +39,28 @@
             user-select: none;
             font-size: 16px;
             text-align: center;
+            
+        }        
+        .moving {
+            transition: top 0.25s, left 0.25s; /* Add transition for smooth movement */
         }
-        .text-box.grabbing{
+        .grabbing{
             background-color: rgba(255, 0, 0, 0.1);
         }
 
-     .selection-rectangle {
-        position: absolute;
-        border: 1px dashed #000;
-        background-color: rgba(0, 0, 255, 0.1);
-        pointer-events: none;
-        z-index: 1000; /* Ensure it overlays other elements */
-    }        
+        .selection-rectangle {
+            position: absolute;
+            border: 1px dashed #000;
+            background-color: rgba(0, 0, 255, 0.1);
+            pointer-events: none;
+            z-index: 1000; /* Ensure it overlays other elements */
+        }
+        .button-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            margin-bottom: 20px;
+        }            
     </style>
 </head>
 <body>
@@ -71,9 +81,59 @@
             <div id="text5" class="text-box" style="top: 150px; left: 120px;">Input 5</div>
             <div id="text6" class="text-box" style="top: 150px; left: 220px;">Input 6</div>
         </div>
+        <div class="button-grid">
+            <button onclick="savePositions(0)">Save Position 1</button>
+            <button onclick="savePositions(1)">Save Position 2</button>
+            <button onclick="savePositions(2)">Save Position 3</button>
+            <button onclick="savePositions(3)">Save Position 4</button>
+            <button onclick="savePositions(4)">Save Position 5</button>
+            <button onclick="savePositions(5)">Save Position 6</button>
+        </div>
+        <div class="button-grid">
+            <button onclick="applyPositions(0)">Apply Position 1</button>
+            <button onclick="applyPositions(1)">Apply Position 2</button>
+            <button onclick="applyPositions(2)">Apply Position 3</button>
+            <button onclick="applyPositions(3)">Apply Position 4</button>
+            <button onclick="applyPositions(4)">Apply Position 5</button>
+            <button onclick="applyPositions(5)">Apply Position 6</button>
+        </div>    
     </div>
 
     <script>
+        let positions = Array(6).fill(null).map(() => []);
+
+        function savePositions(index) {
+            positions[index] = [];
+            document.querySelectorAll('.text-box').forEach(textBox => {
+                positions[index].push({
+                    id: textBox.id,
+                    left: textBox.style.left,
+                    top: textBox.style.top
+                });
+            });
+        }
+
+        function applyPositions(index) {
+            if (positions[index].length === 0) return;
+            positions[index].forEach(pos => {
+                let textBox = document.getElementById(pos.id);
+                let currentLeft = textBox.style.left;
+                let currentTop = textBox.style.top;
+                
+                // Check if the position is changing
+                if (currentLeft !== pos.left || currentTop !== pos.top) {
+                    textBox.classList.add('moving');
+                    textBox.style.left = pos.left;
+                    textBox.style.top = pos.top;
+
+                    // Remove the 'moving' class after the transition ends
+                    textBox.addEventListener('transitionend', function() {
+                        textBox.classList.remove('moving');
+                    }, { once: true });
+                }
+            });
+        }        
+
         document.querySelectorAll('input').forEach((input, index) => {
             input.addEventListener('input', function() {
                 document.getElementById('text' + (index + 1)).textContent = this.value;

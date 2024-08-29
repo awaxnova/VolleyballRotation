@@ -28,7 +28,7 @@
         .display-area {
             width: 300px;
             height: 200px;
-            background-color: black;
+            background-color: gray;
             color: white;
             position: relative;
             overflow: hidden;
@@ -40,6 +40,17 @@
             font-size: 16px;
             text-align: center;
         }
+        .text-box.grabbing{
+            background-color: rgba(255, 0, 0, 0.1);
+        }
+
+     .selection-rectangle {
+        position: absolute;
+        border: 1px dashed #000;
+        background-color: rgba(0, 0, 255, 0.1);
+        pointer-events: none;
+        z-index: 1000; /* Ensure it overlays other elements */
+    }        
     </style>
 </head>
 <body>
@@ -76,6 +87,7 @@
             textBox.addEventListener('mousedown', function(event) {
                 dragging = textBox;
                 dragging.style.cursor = 'grabbing';
+                dragging.classList.add('grabbing');
 
                 // Calculate the offset of the mouse click within the element
                 offsetX = event.clientX - dragging.getBoundingClientRect().left;
@@ -98,10 +110,58 @@
             document.addEventListener('mouseup', function() {
                 if (dragging) {
                     dragging.style.cursor = 'grab';
+                    dragging.classList.remove('grabbing');
                     dragging = null;
                 }
             });
         });
+        let isSelecting = false;
+        let selectionRect = null;
+        let startX = 0, startY = 0;
+
+        document.querySelector('.display-area').addEventListener('mousedown', function(event) {
+            if (!event.target.classList.contains('text-box')) {
+                isSelecting = true;
+                startX = event.clientX;
+                startY = event.clientY;
+
+                selectionRect = document.createElement('div');
+                selectionRect.classList.add('selection-rectangle');
+                selectionRect.style.left = startX + 'px';
+                selectionRect.style.top = startY + 'px';
+                document.body.appendChild(selectionRect);
+            }
+        });
+
+        document.addEventListener('mousemove', function(event) {
+            if (isSelecting) {
+                let currentX = event.clientX;
+                let currentY = event.clientY;
+
+                selectionRect.style.width = Math.abs(currentX - startX) + 'px';
+                selectionRect.style.height = Math.abs(currentY - startY) + 'px';
+                selectionRect.style.left = Math.min(currentX, startX) + 'px';
+                selectionRect.style.top = Math.min(currentY, startY) + 'px';
+            }
+        });
+
+        document.addEventListener('mouseup', function() {
+            if (isSelecting) {
+                let rect = selectionRect.getBoundingClientRect();
+                document.querySelectorAll('.text-box').forEach(textBox => {
+                    let textBoxRect = textBox.getBoundingClientRect();
+                    if (textBoxRect.left >= rect.left && textBoxRect.right <= rect.right &&
+                        textBoxRect.top >= rect.top && textBoxRect.bottom <= rect.bottom) {
+                        textBox.style.cursor = 'grabbing';
+                        textBox.classList.add('grabbing');
+                    }
+                });
+
+                document.body.removeChild(selectionRect);
+                selectionRect = null;
+                isSelecting = false;
+            }
+        });        
     </script>
 </body>
 </html>

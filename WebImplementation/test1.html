@@ -185,128 +185,6 @@
 
     <script>
 
-        function handleRotationClicked(rotation) {
-            
-            const currentRotationButton = document.querySelector('.buttonRotation.current');
-            const upcomingRotationButton = document.querySelector('.buttonRotation.upcoming');
-
-            const currentSituationButton = document.querySelector('.buttonSituation.current');
-            const upcomingSituationButton = document.querySelector('.buttonSituation.upcoming');
-
-            const clickedRotationButton = document.querySelector(`.buttonRotation:nth-child(${rotation})`);
-
-            if (currentRotationButton === clickedRotationButton) {                
-                // If we clicked the rotation button that is already the current rotation, 
-                // then we need to clear the upcoming rotation and situation.
-
-                if(upcomingRotationButton) {
-                    upcomingRotationButton.classList.remove('upcoming');
-                }
-                if(upcomingSituationButton) {
-                    upcomingSituationButton.classList.remove('upcoming');
-                }
-
-                document.getElementById('upcoming-rotation').value = '';
-                document.getElementById('upcoming-situation').value = '';
-
-            } else if (upcomingRotationButton && upcomingRotationButton === clickedRotationButton) {
-
-                // If we clicked the rotation button that is already the upcoming rotation,
-                // then we need to set the current rotation and situation to be the upcoming rotation and situation, and remove the upcoming class.
-                
-                currentRotationButton.classList.remove('current');
-                upcomingRotationButton.classList.remove('upcoming');
-                upcomingRotationButton.classList.add('current');
-                
-                // currentSituationButton.classList.remove('current');
-                // upcomingSituationButton.classList.remove('upcoming');
-                // upcomingSituationButton.classList.add('current');
-
-                // If there's an upcoming situation, then we need to clear it and make it current.
-                if (upcomingSituationButton) {
-                    currentSituationButton.classList.remove('current');
-                    upcomingSituationButton.classList.remove('upcoming');
-                    upcomingSituationButton.classList.add('current');
-                }
-
-            } else {
-                // we clicked a button that's neither current nor upcoming, so we need to clear the upcoming, and set the clicked as upcoming
-                if (upcomingRotationButton) {
-                    upcomingRotationButton.classList.remove('upcoming');
-                }
-                clickedRotationButton.classList.add('upcoming');
-                // Don't adjust the situation - just the rotation that was clicked.
-                //if (upcomingSituationButton) {
-                //    upcomingSituationButton.classList.remove('upcoming');
-                //}
-
-                // Update the upcoming rotation
-                document.getElementById('upcoming-rotation').value = rotation;
-            }
-
-        }
-
-        function handleSitationClicked(situation) {
-            const currentRotationButton = document.querySelector('.buttonRotation.current');
-            const upcomingRotationButton = document.querySelector('.buttonRotation.upcoming');
-
-            const currentSituationButton = document.querySelector('.buttonSituation.current');
-            const upcomingSituationButton = document.querySelector('.buttonSituation.upcoming');
-
-            const buttons = document.querySelectorAll('.buttonSituation');
-            const clickedSituationButton = Array.from(buttons).find(button => button.textContent.toLowerCase() === situation.toLowerCase());
-
-            if (currentSituationButton === clickedSituationButton) {                
-                // If we clicked the situation button that is already the current situation, 
-                // then we need to clear the upcoming rotation and situation.
-
-                if(upcomingSituationButton) {
-                    upcomingSituationButton.classList.remove('upcoming');
-                }
-                if(upcomingRotationButton) {
-                    upcomingRotationButton.classList.remove('upcoming');
-                }
-
-                document.getElementById('upcoming-rotation').value = '';
-                document.getElementById('upcoming-situation').value = '';
-
-            } else if (upcomingSituationButton && upcomingSituationButton === clickedSituationButton) {
-
-                // If we clicked the situation button that is already the upcoming situation,
-                // then we need to set the current rotation and situation to be the upcoming rotation and situation, and remove the upcoming class.
-                
-                currentSituationButton.classList.remove('current');
-                upcomingSituationButton.classList.remove('upcoming');
-                upcomingSituationButton.classList.add('current');
-                
-                // currentRotationButton.classList.remove('current');
-                // upcomingRotationButton.classList.remove('upcoming');
-                // upcomingRotationButton.classList.add('current');
-
-                // If there's an upcoming rotation, then we need to clear it and make it current.
-                if (upcomingRotationButton) {
-                    currentRotationButton.classList.remove('current');
-                    upcomingRotationButton.classList.remove('upcoming');
-                    upcomingRotationButton.classList.add('current');
-                }
-
-            } else {
-                // we clicked a button that's neither current nor upcoming, so we need to clear the upcoming, and set the clicked as upcoming
-                if (upcomingSituationButton) {
-                    upcomingSituationButton.classList.remove('upcoming');
-                }
-                clickedSituationButton.classList.add('upcoming');
-                // Don't adjust the rotation - just the situation that was clicked.
-                //if (upcomingRotationButton) {
-                //    upcomingRotationButton.classList.remove('upcoming');
-                //}
-
-                // Update the upcoming situation
-                document.getElementById('upcoming-situation').value = situation;
-            }
-
-            
-        }
 
         // This is the data structure that will hold the positions of the text boxes
         let positions = {
@@ -316,6 +194,265 @@
             baseDefense: Array(6).fill(null).map(() => []),
             attack: Array(6).fill(null).map(() => [])
         };
+
+        function getCurrentRotationButton() {
+            return document.querySelector('.buttonRotation.current');
+        }
+
+        function getUpcomingRotationButton() {
+            return document.querySelector('.buttonRotation.upcoming');
+        }   
+
+        function getCurrentSituationButton() {
+            return document.querySelector('.buttonSituation.current');
+        }
+
+        function getUpcomingSituationButton() {
+            return document.querySelector('.buttonSituation.upcoming');
+        }
+
+        function getClickedRotationButton(rotation) {
+            return document.querySelector(`.buttonRotation:nth-child(${rotation})`);
+        }
+
+        function getClickedSituationButton(situation) {
+            buttons = document.querySelectorAll('.buttonSituation');
+            return Array.from(buttons).find(button => button.textContent.toLowerCase() === situation.toLowerCase());         
+        }
+
+        function getCurrentPosition() {
+            currentSituationButton = getCurrentSituationButton();
+            currentRotationButton = getCurrentRotationButton();
+
+            currentRotationIndex = parseInt(currentRotationButton.textContent) - 1;
+
+            console.log('getCurrentPosition(): positions:', positions);
+            console.log('getCurrentPosition(): Current rotation/situation:', currentSituationButton.textContent.toLowerCase(), '/', currentRotationButton.textContent);
+            console.log('getCurrentPosition(): positions[currentSituationButton.textContent.toLowerCase()]:', positions[currentSituationButton.textContent.toLowerCase()]);
+            console.log('getCurrentPosition(): positions[currentSituationButton.textContent.toLowerCase()][currentRotationIndex]:', positions[currentSituationButton.textContent.toLowerCase()][currentRotationIndex]);
+
+            return positions[currentSituationButton.textContent.toLowerCase()][currentRotationIndex];
+        }
+
+        function getUpcomingPosition() {
+            upcomingSituationButton = getUpcomingSituationButton();
+            upcomingRotationButton = getUpcomingRotationButton();
+
+            // If the upcoming situation isn't set, then use the current situation
+            if (!upcomingSituationButton) {
+                upcomingSituationButton = getCurrentSituationButton();
+            }
+
+            // If the upcoming rotation isn't set, then use the current rotation
+            if (!upcomingRotationButton) {
+                upcomingRotationButton = getCurrentRotationButton();
+            }
+
+            upcomingRotationIndex = parseInt(upcomingRotationButton.textContent) - 1;
+            return positions[upcomingSituationButton.textContent.toLowerCase()][upcomingRotationIndex];
+        }   
+
+        function updateArrows(){
+            
+            currentRotationButton = getCurrentRotationButton();
+            upcomingRotationButton = getUpcomingRotationButton();
+
+            currentSituationButton = getCurrentSituationButton();
+            upcomingSituationButton = getUpcomingSituationButton();
+
+            // If there's no upcoming rotation, use the current rotation
+            if(!upcomingRotationButton) {
+                upcomingRotationButton = currentRotationButton;
+            }
+            // If there's no upcoming situation, use the current situation
+            if(!upcomingSituationButton) {
+                upcomingSituationButton = currentSituationButton;
+            }
+            
+            // TODO: FIXME: update the arrow locations to show the current to upcoming positions of each player.
+            // use the position array to determine the current and upcoming positions of each player.
+            
+            currentPositions = getCurrentPosition();
+            upcomingPositions = getUpcomingPosition();
+            
+            console.log('updateArrows(): positions:', positions);
+            console.log('updateArrows(): Current rotation/situation:', currentSituationButton.textContent.toLowerCase(), '/', currentRotationButton.textContent);
+            console.log('updateArrows(): Upcoming rotation/situation:', upcomingSituationButton.textContent.toLowerCase(), '/', upcomingRotationButton.textContent);
+            console.log('updateArrows(): Current positions:', currentPositions);
+            console.log('updateArrows(): Upcoming positions:', upcomingPositions);
+
+            // If the upcoming positions are not set, then we don't need to draw arrows.
+            // If the upcoming positions match the current positions, then we don't need to draw arrows.
+            // If the current positions are not set, then we don't need to draw arrows - and throw an error too.
+            // else if both are set, and different from each other, then we need to draw arrows.
+
+            if (!currentPositions || currentPositions.length === 0) {
+                console.error('updateArrows(): Current positions are not set.  All positions should be defined for this formation!');
+                deleteArrows()
+                return;
+            }
+
+            if (!upcomingPositions || upcomingPositions.length === 0) {
+                console.log('updateArrows(): Upcoming positions are not set.');
+                deleteArrows()
+                return;
+            }
+
+            if (currentPositions.length !== upcomingPositions.length) {
+                console.error('updateArrows(): Current and upcoming position lengths do not match.');
+                deleteArrows()
+                return;
+            }
+
+            if(currentPositions.every((pos, index) => pos.left === upcomingPositions[index].left && pos.top === upcomingPositions[index].top)) {
+                console.log('updateArrows(): Current and upcoming positions are the same, so draw no arrows.');
+                deleteArrows()
+                return;
+            }
+
+            // Draw arrows from current to upcoming positions
+            for (let i = 0; i < currentPositions.length; i++) {
+                let current = currentPositions[i];
+                let upcoming = upcomingPositions[i];
+
+                let arrow = document.createElement('div');
+                arrow.classList.add('arrow');
+                arrow.style.position = 'absolute';
+                arrow.style.width = '0';
+                arrow.style.height = '0';
+                arrow.style.borderLeft = '5px solid transparent';
+                arrow.style.borderRight = '5px solid transparent';
+                arrow.style.borderBottom = '5px solid white';
+                arrow.style.left = current.left;
+                arrow.style.top = current.top;
+                arrow.style.transition = 'left 0.5s, top 0.5s';
+
+                document.querySelector('.display-area').appendChild(arrow);
+
+                // Move the arrow to the upcoming position
+                setTimeout(() => {
+                    arrow.style.left = upcoming.left;
+                    arrow.style.top = upcoming.top;
+                }, 1000);
+            }
+
+
+        }
+
+        function deleteArrows() {
+            document.querySelectorAll('.arrow').forEach(arrow => {
+                arrow.remove();
+            });
+        }
+
+        function upcomingClear(clearRotation, clearSituation) {
+            if (clearRotation) {
+                upcomingRotationButton = getUpcomingRotationButton();
+                if (upcomingRotationButton) {
+                    upcomingRotationButton.classList.remove('upcoming');
+                }
+                document.getElementById('upcoming-rotation').value = '';
+            }
+
+            if (clearSituation) {
+                upcomingSituationButton = getUpcomingSituationButton();
+                if (upcomingSituationButton) {
+                    upcomingSituationButton.classList.remove('upcoming');
+                }
+                document.getElementById('upcoming-situation').value = '';
+            }
+        }
+
+        function upcomingPromoteToCurrent(currentRotationButton, upcomingRotationButton, currentSituationButton, upcomingSituationButton) {
+            // If there's an upcoming rotation, then we need to clear it and make it current.
+            if(upcomingRotationButton) {
+                currentRotationButton.classList.remove('current');
+                upcomingRotationButton.classList.remove('upcoming');
+                upcomingRotationButton.classList.add('current');
+            }
+
+            // If there's an upcoming situation, then we need to clear it and make it current.
+            if(upcomingSituationButton) {
+                currentSituationButton.classList.remove('current');
+                upcomingSituationButton.classList.remove('upcoming');
+                upcomingSituationButton.classList.add('current');
+            }
+        }
+
+        function handleRotationClicked(rotation) {
+            
+            currentRotationButton = getCurrentRotationButton();
+            upcomingRotationButton = getUpcomingRotationButton();
+
+            currentSituationButton = getCurrentSituationButton();
+            upcomingSituationButton = getUpcomingSituationButton();
+
+            clickedRotationButton = getClickedRotationButton(rotation);
+
+            
+            if (currentRotationButton === clickedRotationButton) {                
+                // If we clicked the rotation button that is already the current rotation, 
+                // then we need to clear the upcoming rotation and situation.
+                
+                upcomingClear(true,true)
+                
+            } else if (upcomingRotationButton && upcomingRotationButton === clickedRotationButton) {
+                
+                // If we clicked the rotation button that is already the upcoming rotation,
+                // then we need to set the current rotation and situation to be the upcoming rotation and situation, and remove the upcoming class.
+                
+                upcomingPromoteToCurrent(currentRotationButton, upcomingRotationButton, currentSituationButton, upcomingSituationButton);
+                
+            } else {
+                // we clicked a button that's neither current nor upcoming, so we need to clear the upcoming, and set the clicked as upcoming
+                
+                upcomingClear(true,false)
+                clickedRotationButton.classList.add('upcoming');
+                
+                // Update the upcoming rotation
+                document.getElementById('upcoming-rotation').value = rotation;
+            }
+           
+            updateArrows()
+        }
+
+
+        function handleSitationClicked(situation) {
+            currentRotationButton = getCurrentRotationButton();
+            upcomingRotationButton = getUpcomingRotationButton();
+
+            currentSituationButton = getCurrentSituationButton();
+            upcomingSituationButton = getUpcomingSituationButton();
+
+            clickedSituationButton = getClickedSituationButton(situation);
+
+            if (currentSituationButton === clickedSituationButton) {                
+                // If we clicked the situation button that is already the current situation, 
+                // then we need to clear the upcoming rotation and situation.
+                
+                upcomingClear(true,true)
+
+            } else if (upcomingSituationButton && upcomingSituationButton === clickedSituationButton) {
+
+                // If we clicked the situation button that is already the upcoming situation,
+                // then we need to set the current rotation and situation to be the upcoming rotation and situation, and remove the upcoming class.
+                
+                upcomingPromoteToCurrent(currentRotationButton, upcomingRotationButton, currentSituationButton, upcomingSituationButton);
+
+            } else {
+                // we clicked a button that's neither current nor upcoming, so we need to clear the upcoming, and set the clicked as upcoming
+
+                upcomingClear(false, true)
+
+                clickedSituationButton.classList.add('upcoming');
+
+                // Update the upcoming situation
+                document.getElementById('upcoming-situation').value = situation;
+            }
+
+            updateArrows()
+        }
+
 
         function setLocalStorage(key, value) {
             localStorage.setItem(key, JSON.stringify(value));
@@ -328,25 +465,29 @@
         }
 
         function savePositions() {
-            currentSituation = document.getElementById('current-situation').value.toLowerCase();
-            currentRotation = document.getElementById('current-rotation').value.toLowerCase();
+
+            currentSituation = getClickedRotationButton().textContent.toLowerCase();
+            currentRotation = getClickedSituationButton().textContent.toLowerCase();
+
+            // currentSituation = document.getElementById('current-situation').value.toLowerCase();
+            // currentRotation = document.getElementById('current-rotation').value.toLowerCase();
+            currentRotationIndex = parseInt(currentRotation) - 1;
 
             // Print the positions data structure, the current situation, and the current rotation to console
             console.log('Saving positions for current Situation/Rotation:', currentSituation, currentRotation, positions);
-
-
-
-            positions[currentSituation][currentRotation] = [];
-
+            
+            positions[currentSituation][currentRotationIndex] = [];
+            
             document.querySelectorAll('.text-box').forEach(textBox => {
-                positions[currentSituation][currentRotation].push({
+                // Use the -1 to get the index of the current rotation, and use that to index the positions array. !!!
+                positions[currentSituation][currentRotationIndex].push({
                     id: textBox.id,
                     left: textBox.style.left,
                     top: textBox.style.top
                 });
             });
 
-            console.log(`Saving positions for current Situation/Rotation ${currentSituation}/${currentRotation}:`, positions[currentSituation][currentRotation]);
+            console.log(`Saving positions for current Situation/Rotation ${currentSituation}/${currentRotation}:`, positions[currentSituation][currentRotationIndex]);
 
             setLocalStorage('positions', positions); // Sets a local storage item with no expiration
         }
@@ -376,12 +517,16 @@
 
         function applyPositions() {
 
-            currentSituation = document.getElementById('current-situation').value.toLowerCase();
-            currentRotation = document.getElementById('current-rotation').value.toLowerCase();
+            // currentSituation = document.getElementById('current-situation').value.toLowerCase();
+            // currentRotation = document.getElementById('current-rotation').value.toLowerCase();
+
+            currentSituation = getClickedRotationButton().textContent.toLowerCase();
+            currentRotation = getClickedSituationButton().textContent.toLowerCase();
+            currentRotationIndex = parseInt(currentRotation) - 1;
 
             const savedPositions = getLocalStorage('positions');
-            if (savedPositions && savedPositions[currentSituation] && savedPositions[currentSituation][currentRotation]) {
-                savedPositions[currentSituation][currentRotation].forEach(pos => {
+            if (savedPositions && savedPositions[currentSituation] && savedPositions[currentSituation][currentRotationIndex]) {
+                savedPositions[currentSituation][currentRotationIndex].forEach(pos => {
                     const textBox = document.getElementById(pos.id);
                     if (textBox) {
                         let currentLeft = textBox.style.left;

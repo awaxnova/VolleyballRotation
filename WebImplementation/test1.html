@@ -60,7 +60,46 @@
             grid-template-columns: repeat(3, 1fr);
             gap: 10px;
             margin-bottom: 20px;
-        }            
+        }    
+        
+        .status-board {
+            display: flex;
+            flex-direction: column;
+            margin: 20px;
+        }
+
+        .status-box {
+            display: flex;
+            flex-wrap: wrap;
+            margin: 10px 0;
+            width: 100%; /* Adjust width as needed */
+        }
+
+        .status-box label {
+            margin-right: 10px;
+            flex: 1 0 100px; /* Adjust label width as needed */
+        }
+
+        .status-box input {
+            flex: 1 1 100px;
+            padding: 5px;
+            min-width: 100px; /* Adjust minimum width as needed */
+        }      
+        .buttonRotation.current {
+            background-color: green;
+        }
+
+        .buttonRotation.upcoming {
+            background-color: red;
+        }        
+
+        .buttonSituation.current {
+            background-color: green;
+        }
+
+        .buttonSituation.upcoming {
+            background-color: red;
+        }    
     </style>
 </head>
 <body>
@@ -73,6 +112,19 @@
             <input type="text" id="input5" placeholder="Input 5">
             <input type="text" id="input6" placeholder="Input 6">
         </div>
+        <div class="status-board">
+            <div class="status-box">
+                <label>Current Rotation/Situation:</label>
+                <input type="text" id="current-rotation" value="Rotation 1" readonly>
+                <input type="text" id="current-situation" value="Rotation" readonly>
+            </div>
+            <div class="status-box">
+                <label>Upcoming Rotation/Situation:</label>
+                <input type="text" id="upcoming-rotation" value="Rotation 1" readonly>
+                <input type="text" id="upcoming-situation" value="Rotation" readonly>
+            </div>
+        </div>
+        
         <div class="display-area">
             <div id="text1" class="text-box" style="top: 20px; left: 20px;">Input 1</div>
             <div id="text2" class="text-box" style="top: 20px; left: 120px;">Input 2</div>
@@ -99,36 +151,171 @@
             <button onclick="applyPositions(5)">Apply Position 6</button>
         </div>    
         <div class="button-grid" id="rotations">
-            <button onclick="handleRotationClicked(1)">Rotation 1</button>
-            <button onclick="handleRotationClicked(2)">Rotation 2</button>
-            <button onclick="handleRotationClicked(3)">Rotation 3</button>
-            <button onclick="handleRotationClicked(4)">Rotation 4</button>
-            <button onclick="handleRotationClicked(5)">Rotation 5</button>
-            <button onclick="handleRotationClicked(6)">Rotation 6</button>
+            <button class="buttonRotation current"  onclick="handleRotationClicked(1)">1</button>
+            <button class="buttonRotation"          onclick="handleRotationClicked(2)">2</button>
+            <button class="buttonRotation"          onclick="handleRotationClicked(3)">3</button>
+            <button class="buttonRotation"          onclick="handleRotationClicked(4)">4</button>
+            <button class="buttonRotation"          onclick="handleRotationClicked(5)">5</button>
+            <button class="buttonRotation"          onclick="handleRotationClicked(6)">6</button>
         </div>            
         <div class="button-grid" id="situations">
-            <button onclick="handleSitationClicked(1)">Rotation</button>
+            <button class="buttonSituation current" onclick="handleSitationClicked('rotation')">Rotation</button>
             <div></div>
             <div></div>
-            <button onclick="handleSitationClicked(2)">Serve</button>
-            <button onclick="handleSitationClicked(3)">Serve Receive</button>
+            <button class="buttonSituation" onclick="handleSitationClicked('serve')">Serve</button>
+            <button class="buttonSituation" onclick="handleSitationClicked('serve receive')">Serve Receive</button>
             <div></div>
-            <button onclick="handleSitationClicked(4)">Base Defense</button>
-            <button onclick="handleSitationClicked(5)">Attack</button>
+            <button class="buttonSituation" onclick="handleSitationClicked('base defense')">Base Defense</button>
+            <button class="buttonSituation" onclick="handleSitationClicked('attack')">Attack</button>
         </div>            
 
     </div>
     <div>
         <p>
+            <p></p>TODO: when we update the current or upcoming, we should display the appropriate value in the status display area.
             <p></p>TODO: add save/load between sessions
             <p></p>TODO: add situations per rotation: serve, serve receive, attack, base defense
             <p></p>TODO: use local storage to save positions
             <p></p>TODO: when we save a position, don't rewrite the whole array.  Just update the current rotation/sitation.
+            <p></p>TODO: Indicate transition between locations via arrow before transition happens.
+            <p></p>TODO: When we switch the current rotation/situation, then display the appropriate positions on the display area.
+            <p></p>TODO: When we switch the upcoming rotation/situation, then display arrows from the current position to the upcoming position.
         </p>
     </div>
 
     <script>
-        let positions = Array(6).fill(null).map(() => []);
+
+        function handleRotationClicked(rotation) {
+            
+            const currentRotationButton = document.querySelector('.buttonRotation.current');
+            const upcomingRotationButton = document.querySelector('.buttonRotation.upcoming');
+
+            const currentSituationButton = document.querySelector('.buttonSituation.current');
+            const upcomingSituationButton = document.querySelector('.buttonSituation.upcoming');
+
+            const clickedRotationButton = document.querySelector(`.buttonRotation:nth-child(${rotation})`);
+
+            if (currentRotationButton === clickedRotationButton) {                
+                // If we clicked the rotation button that is already the current rotation, 
+                // then we need to clear the upcoming rotation and situation.
+
+                if(upcomingRotationButton) {
+                    upcomingRotationButton.classList.remove('upcoming');
+                }
+                if(upcomingSituationButton) {
+                    upcomingSituationButton.classList.remove('upcoming');
+                }
+
+                document.getElementById('upcoming-rotation').value = '';
+                document.getElementById('upcoming-situation').value = '';
+
+            } else if (upcomingRotationButton && upcomingRotationButton === clickedRotationButton) {
+
+                // If we clicked the rotation button that is already the upcoming rotation,
+                // then we need to set the current rotation and situation to be the upcoming rotation and situation, and remove the upcoming class.
+                
+                currentRotationButton.classList.remove('current');
+                upcomingRotationButton.classList.remove('upcoming');
+                upcomingRotationButton.classList.add('current');
+                
+                // currentSituationButton.classList.remove('current');
+                // upcomingSituationButton.classList.remove('upcoming');
+                // upcomingSituationButton.classList.add('current');
+
+                // If there's an upcoming situation, then we need to clear it and make it current.
+                if (upcomingSituationButton) {
+                    currentSituationButton.classList.remove('current');
+                    upcomingSituationButton.classList.remove('upcoming');
+                    upcomingSituationButton.classList.add('current');
+                }
+
+            } else {
+                // we clicked a button that's neither current nor upcoming, so we need to clear the upcoming, and set the clicked as upcoming
+                if (upcomingRotationButton) {
+                    upcomingRotationButton.classList.remove('upcoming');
+                }
+                clickedRotationButton.classList.add('upcoming');
+                // Don't adjust the situation - just the rotation that was clicked.
+                //if (upcomingSituationButton) {
+                //    upcomingSituationButton.classList.remove('upcoming');
+                //}
+
+                // Update the upcoming rotation
+                document.getElementById('upcoming-rotation').value = rotation;
+            }
+
+        }
+
+        function handleSitationClicked(situation) {
+            const currentRotationButton = document.querySelector('.buttonRotation.current');
+            const upcomingRotationButton = document.querySelector('.buttonRotation.upcoming');
+
+            const currentSituationButton = document.querySelector('.buttonSituation.current');
+            const upcomingSituationButton = document.querySelector('.buttonSituation.upcoming');
+
+            const buttons = document.querySelectorAll('.buttonSituation');
+            const clickedSituationButton = Array.from(buttons).find(button => button.textContent.toLowerCase() === situation.toLowerCase());
+
+            if (currentSituationButton === clickedSituationButton) {                
+                // If we clicked the situation button that is already the current situation, 
+                // then we need to clear the upcoming rotation and situation.
+
+                if(upcomingSituationButton) {
+                    upcomingSituationButton.classList.remove('upcoming');
+                }
+                if(upcomingRotationButton) {
+                    upcomingRotationButton.classList.remove('upcoming');
+                }
+
+                document.getElementById('upcoming-rotation').value = '';
+                document.getElementById('upcoming-situation').value = '';
+
+            } else if (upcomingSituationButton && upcomingSituationButton === clickedSituationButton) {
+
+                // If we clicked the situation button that is already the upcoming situation,
+                // then we need to set the current rotation and situation to be the upcoming rotation and situation, and remove the upcoming class.
+                
+                currentSituationButton.classList.remove('current');
+                upcomingSituationButton.classList.remove('upcoming');
+                upcomingSituationButton.classList.add('current');
+                
+                // currentRotationButton.classList.remove('current');
+                // upcomingRotationButton.classList.remove('upcoming');
+                // upcomingRotationButton.classList.add('current');
+
+                // If there's an upcoming rotation, then we need to clear it and make it current.
+                if (upcomingRotationButton) {
+                    currentRotationButton.classList.remove('current');
+                    upcomingRotationButton.classList.remove('upcoming');
+                    upcomingRotationButton.classList.add('current');
+                }
+
+            } else {
+                // we clicked a button that's neither current nor upcoming, so we need to clear the upcoming, and set the clicked as upcoming
+                if (upcomingSituationButton) {
+                    upcomingSituationButton.classList.remove('upcoming');
+                }
+                clickedSituationButton.classList.add('upcoming');
+                // Don't adjust the rotation - just the situation that was clicked.
+                //if (upcomingRotationButton) {
+                //    upcomingRotationButton.classList.remove('upcoming');
+                //}
+
+                // Update the upcoming situation
+                document.getElementById('upcoming-situation').value = situation;
+            }
+
+            
+        }
+
+        // This is the data structure that will hold the positions of the text boxes
+        let positions = {
+            rotation: Array(6).fill(null).map(() => []),
+            serve: Array(6).fill(null).map(() => []),
+            serveReceive: Array(6).fill(null).map(() => []),
+            baseDefense: Array(6).fill(null).map(() => []),
+            attack: Array(6).fill(null).map(() => [])
+        };
 
         function setLocalStorage(key, value) {
             localStorage.setItem(key, JSON.stringify(value));
@@ -140,44 +327,66 @@
             return value ? JSON.parse(value) : null;
         }
 
-        function savePositions(index) {
-            positions[index] = [];
+        function savePositions() {
+            currentSituation = document.getElementById('current-situation').value.toLowerCase();
+            currentRotation = document.getElementById('current-rotation').value.toLowerCase();
+
+            // Print the positions data structure, the current situation, and the current rotation to console
+            console.log('Saving positions for current Situation/Rotation:', currentSituation, currentRotation, positions);
+
+
+
+            positions[currentSituation][currentRotation] = [];
+
             document.querySelectorAll('.text-box').forEach(textBox => {
-                positions[index].push({
+                positions[currentSituation][currentRotation].push({
                     id: textBox.id,
                     left: textBox.style.left,
                     top: textBox.style.top
                 });
             });
 
-            console.log(`Saving positions for index ${index}:`, positions[index]);
+            console.log(`Saving positions for current Situation/Rotation ${currentSituation}/${currentRotation}:`, positions[currentSituation][currentRotation]);
 
             setLocalStorage('positions', positions); // Sets a local storage item with no expiration
         }
 
-        function loadPositions() { // TODO: FIXME: make this load the position of the current rotation/situation.
+        function loadPositions() { 
+            // Retrieve stored positions from localStorage
             let storedPositions = localStorage.getItem('positions');
             if (storedPositions) {
+                // Parse the stored positions
                 let positions = JSON.parse(storedPositions);
-                positions.forEach((posArray, index) => {
-                    posArray.forEach(pos => {
-                        let textBox = document.getElementById(pos.id);
-                        textBox.style.left = pos.left;
-                        textBox.style.top = pos.top;
-                    });
-                });
+                
+                // Iterate over each situation
+                for (let situation in positions) {
+                    // Iterate over each rotation index within the situation
+                    for (let rotationIndex in positions[situation]) {
+                        positions[situation][rotationIndex].forEach(pos => {
+                            let textBox = document.getElementById(pos.id);
+                            if (textBox) {
+                                textBox.style.left = pos.left;
+                                textBox.style.top = pos.top;
+                            }
+                        });
+                    }
+                }
             }
         }
 
-        function applyPositions(index) {
+        function applyPositions() {
+
+            currentSituation = document.getElementById('current-situation').value.toLowerCase();
+            currentRotation = document.getElementById('current-rotation').value.toLowerCase();
+
             const savedPositions = getLocalStorage('positions');
-            if (savedPositions && savedPositions[index]) {
-                savedPositions[index].forEach(pos => {
+            if (savedPositions && savedPositions[currentSituation] && savedPositions[currentSituation][currentRotation]) {
+                savedPositions[currentSituation][currentRotation].forEach(pos => {
                     const textBox = document.getElementById(pos.id);
                     if (textBox) {
                         let currentLeft = textBox.style.left;
                         let currentTop = textBox.style.top;
-                    
+                        
                         // Check if the position is changing
                         if (currentLeft !== pos.left || currentTop !== pos.top) {
                             textBox.classList.add('moving');
@@ -192,7 +401,7 @@
                     }
                 });
             }
-        }    
+        }
 
         document.querySelectorAll('input').forEach((input, index) => {
             input.addEventListener('input', function() {
@@ -282,9 +491,21 @@
                 isSelecting = false;
             }
         });     
-        
+
+        function initialize() {
+            // Initialize current and upcoming rotation and situation
+            document.getElementById('current-rotation').value = '1';
+            document.getElementById('current-situation').value = 'Rotation';
+            document.getElementById('upcoming-rotation').value = '1';
+            document.getElementById('upcoming-situation').value = 'Rotation';
+
+
+            loadPositions();
+
+        }
+
         // Load positions on page load
-        window.onload = loadPositions;
+        window.onload = initialize;
     </script>
 </body>
 </html>

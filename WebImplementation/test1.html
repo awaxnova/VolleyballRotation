@@ -134,22 +134,6 @@
             <div id="text6" class="text-box" style="top: 150px; left: 220px;">Input 6</div>
         </div>
 
-        <div class="button-grid">
-            <button onclick="savePositions(0)">Save Position 1</button>
-            <button onclick="savePositions(1)">Save Position 2</button>
-            <button onclick="savePositions(2)">Save Position 3</button>
-            <button onclick="savePositions(3)">Save Position 4</button>
-            <button onclick="savePositions(4)">Save Position 5</button>
-            <button onclick="savePositions(5)">Save Position 6</button>
-        </div>
-        <div class="button-grid">
-            <button onclick="applyPositions(0)">Apply Position 1</button>
-            <button onclick="applyPositions(1)">Apply Position 2</button>
-            <button onclick="applyPositions(2)">Apply Position 3</button>
-            <button onclick="applyPositions(3)">Apply Position 4</button>
-            <button onclick="applyPositions(4)">Apply Position 5</button>
-            <button onclick="applyPositions(5)">Apply Position 6</button>
-        </div>    
         <div class="button-grid" id="rotations">
             <button class="buttonRotation current"  onclick="handleRotationClicked(1)">1</button>
             <button class="buttonRotation"          onclick="handleRotationClicked(2)">2</button>
@@ -174,6 +158,9 @@
         <textarea id="jsonExportTextBox" rows="10" cols="50"></textarea>
         <button id="jsonExportButton" value="click to export the configuration">Export configuration</button>
         <button id="jsonImportButton">Import configuration</button>
+        <input type="file" id="jsonFileInput" accept=".json">
+        <button id="loadJsonButton">Load JSON</button>
+        <button id="saveJsonButton">Save JSON</button>
 
         <p>
             <p></p>TODO: when we update the current or upcoming, we should display the appropriate value in the status display area.
@@ -192,11 +179,11 @@
 
         // This is the data structure that will hold the positions of the text boxes
         let positions = {
-            rotation: Array(6).fill(null).map(() => []),
-            serve: Array(6).fill(null).map(() => []),
-            serveReceive: Array(6).fill(null).map(() => []),
-            baseDefense: Array(6).fill(null).map(() => []),
-            attack: Array(6).fill(null).map(() => [])
+            'rotation': Array(6).fill(null).map(() => []),
+            'serve': Array(6).fill(null).map(() => []),
+            'serve receive': Array(6).fill(null).map(() => []),
+            'base defense': Array(6).fill(null).map(() => []),
+            'attack': Array(6).fill(null).map(() => [])
         };
 
         function getCurrentRotationButton() {
@@ -355,7 +342,6 @@
                 if (upcomingRotationButton) {
                     upcomingRotationButton.classList.remove('upcoming');
                 }
-                document.getElementById('upcoming-rotation').value = '';
             }
 
             if (clearSituation) {
@@ -363,22 +349,31 @@
                 if (upcomingSituationButton) {
                     upcomingSituationButton.classList.remove('upcoming');
                 }
-                document.getElementById('upcoming-situation').value = '';
             }
         }
 
         function upcomingPromoteToCurrent(currentRotationButton, upcomingRotationButton, currentSituationButton, upcomingSituationButton) {
             // If there's an upcoming rotation, then we need to clear it and make it current.
+
+            if(!upcomingRotationButton) {
+                upcomingRotationButton = currentRotationButton;
+            }
+
+            if(!upcomingSituationButton) {
+                upcomingSituationButton = currentSituationButton;
+            }
+
             if(upcomingRotationButton) {
                 currentRotationButton.classList.remove('current');
-                upcomingRotationButton.classList.remove('upcoming');
+                upcomingClear(true,false)
                 upcomingRotationButton.classList.add('current');
             }
 
             // If there's an upcoming situation, then we need to clear it and make it current.
             if(upcomingSituationButton) {
+                                
                 currentSituationButton.classList.remove('current');
-                upcomingSituationButton.classList.remove('upcoming');
+                upcomingClear(false,true)
                 upcomingSituationButton.classList.add('current');
             }
         }
@@ -413,11 +408,12 @@
                 upcomingClear(true,false)
                 clickedRotationButton.classList.add('upcoming');
                 
-                // Update the upcoming rotation
-                document.getElementById('upcoming-rotation').value = rotation;
             }
-           
+                       
             updateArrows()
+            applyPositions()
+            updateBillboard()
+            
         }
 
 
@@ -449,15 +445,35 @@
                 upcomingClear(false, true)
 
                 clickedSituationButton.classList.add('upcoming');
-
-                // Update the upcoming situation
-                document.getElementById('upcoming-situation').value = situation;
             }
 
             updateArrows()
+            applyPositions()
+            updateBillboard()
         }
 
+        function updateBillboard(){
+            currentRotationButton = getCurrentRotationButton();
+            upcomingRotationButton = getUpcomingRotationButton();
 
+            currentSituationButton = getCurrentSituationButton();
+            upcomingSituationButton = getUpcomingSituationButton();
+
+            // The current*Buttons always exist, but if an upcoming doesn't exist, set it to the corresponding current button.
+            if(!upcomingRotationButton) {
+                upcomingRotationButton = currentRotationButton;
+            }
+
+            if(!upcomingSituationButton) {
+                upcomingSituationButton = currentSituationButton;
+            }
+
+            document.getElementById('upcoming-situation').value = upcomingSituationButton.textContent.toLowerCase();
+            document.getElementById('upcoming-rotation').value = upcomingRotationButton.textContent.toLowerCase();
+            document.getElementById('current-situation').value = currentSituationButton.textContent.toLowerCase();
+            document.getElementById('current-rotation').value = currentRotationButton.textContent.toLowerCase();
+
+        }
         function setLocalStorage(key, value) {
             localStorage.setItem(key, JSON.stringify(value));
             console.log(`Local storage set: ${key}=${JSON.stringify(value)}`);
@@ -583,6 +599,8 @@
                 if (dragging) {
                     dragging.style.cursor = 'grab';
                     dragging.classList.remove('grabbing');
+                    // Save the new position of dragged element
+                    savePositions();
                     dragging = null;
                 }
             });
@@ -659,6 +677,54 @@
                 } catch (e) {
                     alert('Invalid JSON format. Please check the input.');
                 }
+            });
+
+            // Handle a JSON file input
+            document.getElementById('loadJsonButton').addEventListener('click', function() {
+                const fileInput = document.getElementById('jsonFileInput');
+                const file = fileInput.files[0];
+
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = function(event) {
+                        try {
+                            const positions = JSON.parse(event.target.result);
+                            setLocalStorage('positions', positions); // Assuming setLocalStorage is a function that saves the positions to localStorage
+                            alert('Positions loaded successfully!');
+                        } catch (e) {
+                            alert('Invalid JSON format. Please check the file.');
+                        }
+                    };
+                    reader.readAsText(file);
+                } else {
+                    alert('No file selected. Please select a JSON file.');
+                }
+            });            
+
+            document.getElementById('saveJsonButton').addEventListener('click', function() {
+                const jsonExportTextBox = document.getElementById('jsonExportTextBox');
+                const jsonContent = jsonExportTextBox.value;
+                
+                // Create a Blob from the JSON content
+                const blob = new Blob([jsonContent], { type: 'application/json' });
+                
+                // Create a link element
+                const link = document.createElement('a');
+                
+                // Set the download attribute with a filename
+                link.download = 'positions.json';
+                
+                // Create a URL for the Blob and set it as the href attribute
+                link.href = window.URL.createObjectURL(blob);
+                
+                // Append the link to the body
+                document.body.appendChild(link);
+                
+                // Programmatically click the link to trigger the download
+                link.click();
+                
+                // Remove the link from the document
+                document.body.removeChild(link);
             });
             loadPositions();
 

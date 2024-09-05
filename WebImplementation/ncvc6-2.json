@@ -1,0 +1,229 @@
+{
+  "rotation": [
+    [
+      {
+        "id": "text1",
+        "left": "227px",
+        "top": "37px"
+      },
+      {
+        "id": "text2",
+        "left": "135px",
+        "top": "38px"
+      },
+      {
+        "id": "text3",
+        "left": "51px",
+        "top": "38px"
+      },
+      {
+        "id": "text4",
+        "left": "47px",
+        "top": "153px"
+      },
+      {
+        "id": "text5",
+        "left": "138px",
+        "top": "151px"
+      },
+      {
+        "id": "text6",
+        "left": "223px",
+        "top": "151px"
+      }
+    ],
+    [
+      {
+        "id": "text2",
+        "left": "227px",
+        "top": "37px"
+      },
+      {
+        "id": "text3",
+        "left": "135px",
+        "top": "38px"
+      },
+      {
+        "id": "text4",
+        "left": "51px",
+        "top": "38px"
+      },
+      {
+        "id": "text5",
+        "left": "47px",
+        "top": "153px"
+      },
+      {
+        "id": "text6",
+        "left": "138px",
+        "top": "151px"
+      },
+      {
+        "id": "text1",
+        "left": "223px",
+        "top": "151px"
+      }
+
+    ],
+    [
+      {
+        "id": "text3",
+        "left": "227px",
+        "top": "37px"
+      },
+      {
+        "id": "text4",
+        "left": "135px",
+        "top": "38px"
+      },
+      {
+        "id": "text5",
+        "left": "51px",
+        "top": "38px"
+      },
+      {
+        "id": "text6",
+        "left": "47px",
+        "top": "153px"
+      },
+      {
+        "id": "text1",
+        "left": "138px",
+        "top": "151px"
+      },
+      {
+        "id": "text2",
+        "left": "223px",
+        "top": "151px"
+      }      
+    ],
+    [
+      {
+        "id": "text4",
+        "left": "227px",
+        "top": "37px"
+      },
+      {
+        "id": "text5",
+        "left": "135px",
+        "top": "38px"
+      },
+      {
+        "id": "text6",
+        "left": "51px",
+        "top": "38px"
+      },
+      {
+        "id": "text1",
+        "left": "47px",
+        "top": "153px"
+      },
+      {
+        "id": "text2",
+        "left": "138px",
+        "top": "151px"
+      },
+      {
+        "id": "text3",
+        "left": "223px",
+        "top": "151px"
+      }         
+    ],
+    [
+      {
+        "id": "text5",
+        "left": "227px",
+        "top": "37px"
+      },
+      {
+        "id": "text6",
+        "left": "135px",
+        "top": "38px"
+      },
+      {
+        "id": "text1",
+        "left": "51px",
+        "top": "38px"
+      },
+      {
+        "id": "text2",
+        "left": "47px",
+        "top": "153px"
+      },
+      {
+        "id": "text3",
+        "left": "138px",
+        "top": "151px"
+      },
+      {
+        "id": "text4",
+        "left": "223px",
+        "top": "151px"
+      }               
+    ],
+    [
+      {
+        "id": "text6",
+        "left": "227px",
+        "top": "37px"
+      },
+      {
+        "id": "text1",
+        "left": "135px",
+        "top": "38px"
+      },
+      {
+        "id": "text2",
+        "left": "51px",
+        "top": "38px"
+      },
+      {
+        "id": "text3",
+        "left": "47px",
+        "top": "153px"
+      },
+      {
+        "id": "text4",
+        "left": "138px",
+        "top": "151px"
+      },
+      {
+        "id": "text5",
+        "left": "223px",
+        "top": "151px"
+      }        
+    ]
+  ],
+  "serve": [
+    [],
+    [],
+    [],
+    [],
+    [],
+    []
+  ],
+  "serve receive": [
+    [],
+    [],
+    [],
+    [],
+    [],
+    []
+  ],
+  "base defense": [
+    [],
+    [],
+    [],
+    [],
+    [],
+    []
+  ],
+  "attack": [
+    [],
+    [],
+    [],
+    [],
+    [],
+    []
+  ]
+}

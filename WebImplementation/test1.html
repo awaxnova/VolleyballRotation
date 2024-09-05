@@ -171,6 +171,9 @@
 
     </div>
     <div>
+        <textarea id="jsonExportTextBox" rows="10" cols="50"></textarea>
+        <button id="jsonExportButton" value="click to export the configuration">Export configuration</button>
+
         <p>
             <p></p>TODO: when we update the current or upcoming, we should display the appropriate value in the status display area.
             <p></p>TODO: add save/load between sessions
@@ -466,11 +469,8 @@
 
         function savePositions() {
 
-            currentSituation = getClickedRotationButton().textContent.toLowerCase();
-            currentRotation = getClickedSituationButton().textContent.toLowerCase();
-
-            // currentSituation = document.getElementById('current-situation').value.toLowerCase();
-            // currentRotation = document.getElementById('current-rotation').value.toLowerCase();
+            currentSituation = getCurrentSituationButton().textContent.toLowerCase();
+            currentRotation = getCurrentRotationButton().textContent.toLowerCase();
             currentRotationIndex = parseInt(currentRotation) - 1;
 
             // Print the positions data structure, the current situation, and the current rotation to console
@@ -517,11 +517,8 @@
 
         function applyPositions() {
 
-            // currentSituation = document.getElementById('current-situation').value.toLowerCase();
-            // currentRotation = document.getElementById('current-rotation').value.toLowerCase();
-
-            currentSituation = getClickedRotationButton().textContent.toLowerCase();
-            currentRotation = getClickedSituationButton().textContent.toLowerCase();
+            currentSituation = getCurrentSituationButton().textContent.toLowerCase();
+            currentRotation = getCurrentRotationButton().textContent.toLowerCase();
             currentRotationIndex = parseInt(currentRotation) - 1;
 
             const savedPositions = getLocalStorage('positions');
@@ -644,6 +641,11 @@
             document.getElementById('upcoming-rotation').value = '1';
             document.getElementById('upcoming-situation').value = 'Rotation';
 
+            document.getElementById('jsonExportButton').addEventListener('click', function() {
+                const positions = getLocalStorage('positions'); // Assuming getLocalStorage is a function that retrieves the positions from localStorage
+                const jsonExportTextBox = document.getElementById('jsonExportTextBox');
+                jsonExportTextBox.value = JSON.stringify(positions, null, 2); // Pretty-print the JSON with 2-space indentation
+            });
 
             loadPositions();
 

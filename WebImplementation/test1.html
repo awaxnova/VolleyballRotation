@@ -173,6 +173,7 @@
     <div>
         <textarea id="jsonExportTextBox" rows="10" cols="50"></textarea>
         <button id="jsonExportButton" value="click to export the configuration">Export configuration</button>
+        <button id="jsonImportButton">Import configuration</button>
 
         <p>
             <p></p>TODO: when we update the current or upcoming, we should display the appropriate value in the status display area.
@@ -647,6 +648,18 @@
                 jsonExportTextBox.value = JSON.stringify(positions, null, 2); // Pretty-print the JSON with 2-space indentation
             });
 
+            document.getElementById('jsonImportButton').addEventListener('click', function() {
+                const jsonExportTextBox = document.getElementById('jsonExportTextBox');
+                try {
+                    const positions = JSON.parse(jsonExportTextBox.value);
+                    setLocalStorage('positions', positions); // Assuming setLocalStorage is a function that saves the positions to localStorage
+                    //alert('Positions imported successfully!');
+                    loadPositions();
+                    //alert('Positions loaded!');
+                } catch (e) {
+                    alert('Invalid JSON format. Please check the input.');
+                }
+            });
             loadPositions();
 
         }

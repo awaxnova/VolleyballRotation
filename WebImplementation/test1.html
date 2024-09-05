@@ -81,6 +81,7 @@
             <div id="text5" class="text-box" style="top: 150px; left: 120px;">Input 5</div>
             <div id="text6" class="text-box" style="top: 150px; left: 220px;">Input 6</div>
         </div>
+
         <div class="button-grid">
             <button onclick="savePositions(0)">Save Position 1</button>
             <button onclick="savePositions(1)">Save Position 2</button>
@@ -97,10 +98,47 @@
             <button onclick="applyPositions(4)">Apply Position 5</button>
             <button onclick="applyPositions(5)">Apply Position 6</button>
         </div>    
+        <div class="button-grid" id="rotations">
+            <button onclick="handleRotationClicked(1)">Rotation 1</button>
+            <button onclick="handleRotationClicked(2)">Rotation 2</button>
+            <button onclick="handleRotationClicked(3)">Rotation 3</button>
+            <button onclick="handleRotationClicked(4)">Rotation 4</button>
+            <button onclick="handleRotationClicked(5)">Rotation 5</button>
+            <button onclick="handleRotationClicked(6)">Rotation 6</button>
+        </div>            
+        <div class="button-grid" id="situations">
+            <button onclick="handleSitationClicked(1)">Rotation</button>
+            <div></div>
+            <div></div>
+            <button onclick="handleSitationClicked(2)">Serve</button>
+            <button onclick="handleSitationClicked(3)">Serve Receive</button>
+            <div></div>
+            <button onclick="handleSitationClicked(4)">Base Defense</button>
+            <button onclick="handleSitationClicked(5)">Attack</button>
+        </div>            
+
+    </div>
+    <div>
+        <p>
+            <p></p>TODO: add save/load between sessions
+            <p></p>TODO: add situations per rotation: serve, serve receive, attack, base defense
+            <p></p>TODO: use local storage to save positions
+            <p></p>TODO: when we save a position, don't rewrite the whole array.  Just update the current rotation/sitation.
+        </p>
     </div>
 
     <script>
         let positions = Array(6).fill(null).map(() => []);
+
+        function setLocalStorage(key, value) {
+            localStorage.setItem(key, JSON.stringify(value));
+            console.log(`Local storage set: ${key}=${JSON.stringify(value)}`);
+        }
+        
+        function getLocalStorage(name) {
+            const value = localStorage.getItem(name);
+            return value ? JSON.parse(value) : null;
+        }
 
         function savePositions(index) {
             positions[index] = [];
@@ -111,28 +149,50 @@
                     top: textBox.style.top
                 });
             });
+
+            console.log(`Saving positions for index ${index}:`, positions[index]);
+
+            setLocalStorage('positions', positions); // Sets a local storage item with no expiration
+        }
+
+        function loadPositions() { // TODO: FIXME: make this load the position of the current rotation/situation.
+            let storedPositions = localStorage.getItem('positions');
+            if (storedPositions) {
+                let positions = JSON.parse(storedPositions);
+                positions.forEach((posArray, index) => {
+                    posArray.forEach(pos => {
+                        let textBox = document.getElementById(pos.id);
+                        textBox.style.left = pos.left;
+                        textBox.style.top = pos.top;
+                    });
+                });
+            }
         }
 
         function applyPositions(index) {
-            if (positions[index].length === 0) return;
-            positions[index].forEach(pos => {
-                let textBox = document.getElementById(pos.id);
-                let currentLeft = textBox.style.left;
-                let currentTop = textBox.style.top;
-                
-                // Check if the position is changing
-                if (currentLeft !== pos.left || currentTop !== pos.top) {
-                    textBox.classList.add('moving');
-                    textBox.style.left = pos.left;
-                    textBox.style.top = pos.top;
+            const savedPositions = getLocalStorage('positions');
+            if (savedPositions && savedPositions[index]) {
+                savedPositions[index].forEach(pos => {
+                    const textBox = document.getElementById(pos.id);
+                    if (textBox) {
+                        let currentLeft = textBox.style.left;
+                        let currentTop = textBox.style.top;
+                    
+                        // Check if the position is changing
+                        if (currentLeft !== pos.left || currentTop !== pos.top) {
+                            textBox.classList.add('moving');
+                            textBox.style.left = pos.left;
+                            textBox.style.top = pos.top;
 
-                    // Remove the 'moving' class after the transition ends
-                    textBox.addEventListener('transitionend', function() {
-                        textBox.classList.remove('moving');
-                    }, { once: true });
-                }
-            });
-        }        
+                            // Remove the 'moving' class after the transition ends
+                            textBox.addEventListener('transitionend', function() {
+                                textBox.classList.remove('moving');
+                            }, { once: true });
+                        }
+                    }
+                });
+            }
+        }    
 
         document.querySelectorAll('input').forEach((input, index) => {
             input.addEventListener('input', function() {
@@ -221,7 +281,10 @@
                 selectionRect = null;
                 isSelecting = false;
             }
-        });        
+        });     
+        
+        // Load positions on page load
+        window.onload = loadPositions;
     </script>
 </body>
 </html>

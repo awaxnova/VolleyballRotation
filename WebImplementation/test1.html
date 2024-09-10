@@ -33,7 +33,7 @@
             position: relative;
             overflow: hidden;
         }
-        .text-box {
+        .text-box.courtDisplay {
             position: absolute;
             cursor: grab;
             user-select: none;
@@ -104,13 +104,16 @@
 </head>
 <body>
     <div>
+        <div id="formationName" style="text-align: center; font-size: 24px; margin-bottom: 20px;">
+            Formation Name: [Your Formation Name Here]
+        </div>
         <div class="container">
-            <input type="text" id="input1" placeholder="Input 1">
-            <input type="text" id="input2" placeholder="Input 2">
-            <input type="text" id="input3" placeholder="Input 3">
-            <input type="text" id="input4" placeholder="Input 4">
-            <input type="text" id="input5" placeholder="Input 5">
-            <input type="text" id="input6" placeholder="Input 6">
+            <input type="text" id="nameInput3" placeholder="Input 3">
+            <input type="text" id="nameInput2" placeholder="Input 2">
+            <input type="text" id="nameInput1" placeholder="Input 1">
+            <input type="text" id="nameInput4" placeholder="Input 4">
+            <input type="text" id="nameInput5" placeholder="Input 5">
+            <input type="text" id="nameInput6" placeholder="Input 6">
         </div>
         <div class="status-board">
             <div class="status-box">
@@ -126,21 +129,21 @@
         </div>
         
         <div class="display-area">
-            <div id="text1" class="text-box" style="top: 20px; left: 20px;">Input 1</div>
-            <div id="text2" class="text-box" style="top: 20px; left: 120px;">Input 2</div>
-            <div id="text3" class="text-box" style="top: 20px; left: 220px;">Input 3</div>
-            <div id="text4" class="text-box" style="top: 150px; left: 20px;">Input 4</div>
-            <div id="text5" class="text-box" style="top: 150px; left: 120px;">Input 5</div>
-            <div id="text6" class="text-box" style="top: 150px; left: 220px;">Input 6</div>
+            <div id="text3" class="text-box courtDisplay" style="top: 20px; left: 20px;">Input 3</div>
+            <div id="text2" class="text-box courtDisplay" style="top: 20px; left: 120px;">Input 2</div>
+            <div id="text1" class="text-box courtDisplay" style="top: 20px; left: 220px;">Input 1</div>
+            <div id="text4" class="text-box courtDisplay" style="top: 150px; left: 20px;">Input 4</div>
+            <div id="text5" class="text-box courtDisplay" style="top: 150px; left: 120px;">Input 5</div>
+            <div id="text6" class="text-box courtDisplay" style="top: 150px; left: 220px;">Input 6</div>
         </div>
 
         <div class="button-grid" id="rotations">
-            <button class="buttonRotation current"  onclick="handleRotationClicked(1)">1</button>
-            <button class="buttonRotation"          onclick="handleRotationClicked(2)">2</button>
-            <button class="buttonRotation"          onclick="handleRotationClicked(3)">3</button>
-            <button class="buttonRotation"          onclick="handleRotationClicked(4)">4</button>
-            <button class="buttonRotation"          onclick="handleRotationClicked(5)">5</button>
-            <button class="buttonRotation"          onclick="handleRotationClicked(6)">6</button>
+            <button class="buttonRotation"         id="3" onclick="handleRotationClicked(3)">3</button>
+            <button class="buttonRotation"         id="2" onclick="handleRotationClicked(2)">2</button>
+            <button class="buttonRotation current" id="1" onclick="handleRotationClicked(1)">1</button>
+            <button class="buttonRotation"         id="4" onclick="handleRotationClicked(4)">4</button>
+            <button class="buttonRotation"         id="5" onclick="handleRotationClicked(5)">5</button>
+            <button class="buttonRotation"         id="6" onclick="handleRotationClicked(6)">6</button>
         </div>            
         <div class="button-grid" id="situations">
             <button class="buttonSituation current" onclick="handleSitationClicked('rotation')">Rotation</button>
@@ -163,27 +166,29 @@
         <button id="saveJsonButton">Save JSON</button>
 
         <p>
-            <p></p>TODO: when we update the current or upcoming, we should display the appropriate value in the status display area.
-            <p></p>TODO: add save/load between sessions
-            <p></p>TODO: add situations per rotation: serve, serve receive, attack, base defense
-            <p></p>TODO: use local storage to save positions
-            <p></p>TODO: when we save a position, don't rewrite the whole array.  Just update the current rotation/sitation.
-            <p></p>TODO: Indicate transition between locations via arrow before transition happens.
-            <p></p>TODO: When we switch the current rotation/situation, then display the appropriate positions on the display area.
-            <p></p>TODO: When we switch the upcoming rotation/situation, then display arrows from the current position to the upcoming position.
+            <p></p>TODO: Selectable arrow types, colors, hashing
+            <p></p>TODO: color mark-up for the text boxes
         </p>
     </div>
 
     <script>
 
 
-        // This is the data structure that will hold the positions of the text boxes
-        let positions = {
-            'rotation': Array(6).fill(null).map(() => []),
-            'serve': Array(6).fill(null).map(() => []),
-            'serve receive': Array(6).fill(null).map(() => []),
-            'base defense': Array(6).fill(null).map(() => []),
-            'attack': Array(6).fill(null).map(() => [])
+        let config = {
+            // This is the data structure that will hold the positions of the text boxes
+            positions : { // Arranged by [situation][rotation index][position index]
+                'rotation': Array(6).fill(null).map(() => []),
+                'serve': Array(6).fill(null).map(() => []),
+                'serve receive': Array(6).fill(null).map(() => []),
+                'base defense': Array(6).fill(null).map(() => []),
+                'attack': Array(6).fill(null).map(() => [])
+            },
+    
+            names : // Arranged by [current rotation index][position index]
+                Array(6).fill(null).map(() => Array(6).fill(null))
+            ,
+
+            formationName : 'Default Formation'
         };
 
         function getCurrentRotationButton() {
@@ -203,7 +208,7 @@
         }
 
         function getClickedRotationButton(rotation) {
-            return document.querySelector(`.buttonRotation:nth-child(${rotation})`);
+            return document.getElementById(rotation);
         }
 
         function getClickedSituationButton(situation) {
@@ -212,35 +217,57 @@
         }
 
         function getCurrentPosition() {
-            currentSituationButton = getCurrentSituationButton();
-            currentRotationButton = getCurrentRotationButton();
+            let currentSituationButton = getCurrentSituationButton();
+            let currentRotationButton = getCurrentRotationButton();
 
-            currentRotationIndex = parseInt(currentRotationButton.textContent) - 1;
+            let currentRotationIndex = parseInt(currentRotationButton.textContent) - 1;
 
-            console.log('getCurrentPosition(): positions:', positions);
-            console.log('getCurrentPosition(): Current rotation/situation:', currentSituationButton.textContent.toLowerCase(), '/', currentRotationButton.textContent);
-            console.log('getCurrentPosition(): positions[currentSituationButton.textContent.toLowerCase()]:', positions[currentSituationButton.textContent.toLowerCase()]);
-            console.log('getCurrentPosition(): positions[currentSituationButton.textContent.toLowerCase()][currentRotationIndex]:', positions[currentSituationButton.textContent.toLowerCase()][currentRotationIndex]);
+            console.log(`getCurrentPosition(): positions:`, config.positions);
 
-            return positions[currentSituationButton.textContent.toLowerCase()][currentRotationIndex];
+            let situation = currentSituationButton.textContent.toLowerCase().trim();
+            console.log(`getCurrentPosition(): situation: '${situation}', situation.trim(): '/${situation}/'`);
+            console.log(`getCurrentPosition(): currentRotationIndex: ${currentRotationIndex}`);
+
+            if (!config.positions[situation]) {
+                console.error(`getCurrentPosition(): Situation '${situation}' not found in config.positions`);
+                return [];
+            }
+
+            if (!config.positions[situation][currentRotationIndex]) {
+                console.error(`getCurrentPosition(): Rotation index '${currentRotationIndex}' not found for situation '${situation}'`);
+                return [];
+            }
+
+            console.log(`getCurrentPosition(): config.positions[sit: '${situation}'][rIdx: ${currentRotationIndex}]:`, config.positions[situation][currentRotationIndex]);
+
+            return config.positions[situation][currentRotationIndex];
         }
 
         function getUpcomingPosition() {
             upcomingSituationButton = getUpcomingSituationButton();
             upcomingRotationButton = getUpcomingRotationButton();
 
+            
             // If the upcoming situation isn't set, then use the current situation
             if (!upcomingSituationButton) {
+                console.log('getUpcomingPosition(): upcomingSituationButton not set, using current situation');
                 upcomingSituationButton = getCurrentSituationButton();
             }
-
+            
             // If the upcoming rotation isn't set, then use the current rotation
             if (!upcomingRotationButton) {
+                console.log('getUpcomingPosition(): upcomingSituationButton not set, using current situation');
                 upcomingRotationButton = getCurrentRotationButton();
             }
+            
+            let situation = upcomingSituationButton.textContent.toLowerCase().trim();
+            let upcomingRotationIndex = parseInt(upcomingRotationButton.textContent) - 1;
+
+            console.log(`getUpcomingSituation(): situation: '${situation}', situation.trim(): '/${situation}/'`);
+            console.log(`getUpcomingPosition(): upcomingRotationIndex: ${upcomingRotationIndex}`);
 
             upcomingRotationIndex = parseInt(upcomingRotationButton.textContent) - 1;
-            return positions[upcomingSituationButton.textContent.toLowerCase()][upcomingRotationIndex];
+            return config.positions[upcomingSituationButton.textContent.toLowerCase()][upcomingRotationIndex];
         }   
 
         function updateArrows(){
@@ -266,7 +293,7 @@
             currentPositions = getCurrentPosition();
             upcomingPositions = getUpcomingPosition();
             
-            console.log('updateArrows(): positions:', positions);
+            console.log('updateArrows(): config.positions:', config.positions);
             console.log('updateArrows(): Current rotation/situation:', currentSituationButton.textContent.toLowerCase(), '/', currentRotationButton.textContent);
             console.log('updateArrows(): Upcoming rotation/situation:', upcomingSituationButton.textContent.toLowerCase(), '/', upcomingRotationButton.textContent);
             console.log('updateArrows(): Current positions:', currentPositions);
@@ -295,45 +322,95 @@
                 return;
             }
 
-            if(currentPositions.every((pos, index) => pos.left === upcomingPositions[index].left && pos.top === upcomingPositions[index].top)) {
+            if(currentPositions.every((pos, index) => 
+                pos.left === upcomingPositions[index].left && 
+                pos.top === upcomingPositions[index].top &&
+                pos.id === upcomingPositions[index].id)) {
                 console.log('updateArrows(): Current and upcoming positions are the same, so draw no arrows.');
                 deleteArrows()
                 return;
             }
 
-            // Draw arrows from current to upcoming positions
-            for (let i = 0; i < currentPositions.length; i++) {
+            // Iterate through each id in the current positions, and draw an arrow to the upcoming position with the matching id
+            for(let i = 0; i<currentPositions.length; i++) {
+
                 let current = currentPositions[i];
-                let upcoming = upcomingPositions[i];
+                let upcoming = upcomingPositions.find(pos => pos.id === current.id);
 
-                let arrow = document.createElement('div');
-                arrow.classList.add('arrow');
-                arrow.style.position = 'absolute';
-                arrow.style.width = '0';
-                arrow.style.height = '0';
-                arrow.style.borderLeft = '5px solid transparent';
-                arrow.style.borderRight = '5px solid transparent';
-                arrow.style.borderBottom = '5px solid white';
-                arrow.style.left = current.left;
-                arrow.style.top = current.top;
-                arrow.style.transition = 'left 0.5s, top 0.5s';
+                if(upcoming) {
+                    console.log(`updateArrows(): Drawing arrow from ${current.id} to ${upcoming.id}`);
+                    // Calculate the distance and angle between current and upcoming positions
+                    let deltaX = parseInt(upcoming.left) - parseInt(current.left);
+                    let deltaY = parseInt(upcoming.top) - parseInt(current.top);
+                    let distance = Math.sqrt(deltaX * deltaX + deltaY * deltaY);
+                    let angle = Math.atan2(deltaY, deltaX) * (180 / Math.PI);
 
-                document.querySelector('.display-area').appendChild(arrow);
+                    // Create the arrow tail
+                    //let tail = document.createElement('div');
+                    //tail.classList.add('arrow-tail');
+                    //tail.style.position = 'absolute';
+                    //tail.style.width = distance + 'px';
+                    //tail.style.height = '2px';
+                    //tail.style.backgroundColor = 'blue'; // Change the color of the tail here
+                    //tail.style.left = current.left;
+                    //tail.style.top = current.top;
+                    //tail.style.transformOrigin = '0 0';
+                    //tail.style.transform = `rotate(${angle}deg)`;
 
-                // Move the arrow to the upcoming position
-                setTimeout(() => {
-                    arrow.style.left = upcoming.left;
-                    arrow.style.top = upcoming.top;
-                }, 1000);
+                    let tail = document.createElement('div');
+                    tail.classList.add('arrow-tail');
+                    tail.style.position = 'absolute';
+                    tail.style.width = distance + 'px';
+                    tail.style.height = '0'; // Set height to 0 for border to work
+                    tail.style.borderTop = '2px dashed blue'; // Change the color and style of the tail here
+                    tail.style.left = current.left;
+                    tail.style.top = current.top;
+                    tail.style.transformOrigin = '0 0';
+                    tail.style.transform = `rotate(${angle}deg)`;
+
+                    // Create the arrow head
+                    let head = document.createElement('div');
+                    head.classList.add('arrow-head');
+                    head.style.position = 'absolute';
+                    head.style.width = '0';
+                    head.style.height = '0';
+                    head.style.borderLeft = '5px solid transparent';
+                    head.style.borderRight = '5px solid transparent';
+                    head.style.borderBottom = '10px solid red'; // Change the color of the head here
+                    head.style.left = upcoming.left;
+                    head.style.top = upcoming.top;
+                    head.style.transform = `rotate(${angle}deg)`;
+
+                    // Append the tail and head to the display area
+                    document.querySelector('.display-area').appendChild(tail);
+                    document.querySelector('.display-area').appendChild(head);
+
+                    // // Move the arrow to the upcoming position
+                    // setTimeout(() => {
+                    //     tail.style.left = upcoming.left;
+                    //     tail.style.top = upcoming.top;
+                    //     head.style.left = upcoming.left;
+                    //     head.style.top = upcoming.top;
+                    // }, 1000);
+
+                } else {
+                    console.error(`updateArrows(): No upcoming position found for ${current.id}`);
+                }
             }
+
+
 
 
         }
 
         function deleteArrows() {
-            document.querySelectorAll('.arrow').forEach(arrow => {
+            document.querySelectorAll('.arrow-tail').forEach(arrow => {
                 arrow.remove();
             });
+            document.querySelectorAll('.arrow-head').forEach(arrow => {
+                arrow.remove();
+            });
+
         }
 
         function upcomingClear(clearRotation, clearSituation) {
@@ -410,9 +487,7 @@
                 
             }
                        
-            updateArrows()
-            applyPositions()
-            updateBillboard()
+            updateClickHandled()
             
         }
 
@@ -447,9 +522,13 @@
                 clickedSituationButton.classList.add('upcoming');
             }
 
-            updateArrows()
-            applyPositions()
+            updateClickHandled()
+        }
+
+        function updateClickHandled(){
+            applyConfig()
             updateBillboard()
+            updateArrows()
         }
 
         function updateBillboard(){
@@ -484,43 +563,56 @@
             return value ? JSON.parse(value) : null;
         }
 
-        function savePositions() {
+        function getLocalStorage_positions(){
+            let config = getLocalStorage_config();
+            return config ? config.positions : null;
+        }
+
+        function getLocalStorage_config(){
+            return getLocalStorage('config');
+        }
+
+        function saveConfig() {
 
             currentSituation = getCurrentSituationButton().textContent.toLowerCase();
             currentRotation = getCurrentRotationButton().textContent.toLowerCase();
             currentRotationIndex = parseInt(currentRotation) - 1;
 
             // Print the positions data structure, the current situation, and the current rotation to console
-            console.log('Saving positions for current Situation/Rotation:', currentSituation, currentRotation, positions);
+            console.log('Saving positions for current Situation/Rotation:', currentSituation, currentRotation, config.positions);
             
-            positions[currentSituation][currentRotationIndex] = [];
-            
-            document.querySelectorAll('.text-box').forEach(textBox => {
+            document.querySelectorAll('.text-box.courtDisplay').forEach((textBox,positionIndex) => {
                 // Use the -1 to get the index of the current rotation, and use that to index the positions array. !!!
-                positions[currentSituation][currentRotationIndex].push({
+                config.positions[currentSituation][currentRotationIndex][positionIndex] = {
                     id: textBox.id,
                     left: textBox.style.left,
                     top: textBox.style.top
-                });
+                };
+
+                // Save the names
+                config.names[currentRotationIndex][positionIndex] = document.getElementById('text' + (textBox.id).substring(4)).textContent;
             });
 
-            console.log(`Saving positions for current Situation/Rotation ${currentSituation}/${currentRotation}:`, positions[currentSituation][currentRotationIndex]);
+            console.log(`Saving positions for current Situation/Rotation ${currentSituation}/${currentRotation}:`, config.positions[currentSituation][currentRotationIndex]);
 
-            setLocalStorage('positions', positions); // Sets a local storage item with no expiration
+            //setLocalStorage('positions', config.positions); // Sets a local storage item with no expiration
+            setLocalStorage('config', config); // Sets a local storage item with no expiration
         }
 
-        function loadPositions() { 
+        function loadConfig() { 
             // Retrieve stored positions from localStorage
-            let storedPositions = localStorage.getItem('positions');
-            if (storedPositions) {
-                // Parse the stored positions
-                let positions = JSON.parse(storedPositions);
-                
+            let storedConfig = getLocalStorage_config();
+            let parsedPositions = storedConfig ? storedConfig.positions : null;
+
+            console.log('loadConfig(): Loading...');
+
+            if (parsedPositions) {
+
                 // Iterate over each situation
-                for (let situation in positions) {
+                for (let situation in parsedPositions) {
                     // Iterate over each rotation index within the situation
-                    for (let rotationIndex in positions[situation]) {
-                        positions[situation][rotationIndex].forEach(pos => {
+                    for (let rotationIndex in parsedPositions[situation]) {
+                        parsedPositions[situation][rotationIndex].forEach(pos => {
                             let textBox = document.getElementById(pos.id);
                             if (textBox) {
                                 textBox.style.left = pos.left;
@@ -529,16 +621,50 @@
                         });
                     }
                 }
+                console.log('loadConfig(): loaded positions:', parsedPositions);
+            }
+
+            let parsedNames = storedConfig ? storedConfig.names : null;
+            if (parsedNames) {
+                for (let i = 0; i < parsedNames.length; i++) {
+                    let name = parsedNames[i];
+                    let textBox = document.getElementById('text' + (i + 1));
+                    if (textBox) {
+                        textBox.textContent = name;
+                    }
+                }
+                console.log('loadConfig(): loaded names:', parsedNames);
+            }
+
+            let storedFormationName = storedConfig ? storedConfig.formationName : null;
+            if (storedFormationName) {
+                document.getElementById('formationName').textContent = `Formation Name: ${storedFormationName}`;
+                console.log('loadConfig(): loaded formation name:', storedFormationName);
             }
         }
 
-        function applyPositions() {
+        function applyConfig() {
 
             currentSituation = getCurrentSituationButton().textContent.toLowerCase();
             currentRotation = getCurrentRotationButton().textContent.toLowerCase();
             currentRotationIndex = parseInt(currentRotation) - 1;
 
-            const savedPositions = getLocalStorage('positions');
+            const savedConfig = getLocalStorage_config();
+
+            if(!savedConfig) {
+                console.log('applyConfig(): No saved config found.');
+                return;
+            }
+            else {
+                console.log('applyConfig(): Saved config found:', savedConfig);
+                config = savedConfig;
+            }
+            const savedPositions = savedConfig ? savedConfig.positions : null;
+            const savedNames = savedConfig ? savedConfig.names : null;
+            const formationName = savedConfig ? savedConfig.formationName : null;
+
+            console.log('applyConfig(): Applying positions for current Situation/Rotation:', currentSituation, currentRotation, savedPositions);
+
             if (savedPositions && savedPositions[currentSituation] && savedPositions[currentSituation][currentRotationIndex]) {
                 savedPositions[currentSituation][currentRotationIndex].forEach(pos => {
                     const textBox = document.getElementById(pos.id);
@@ -559,19 +685,47 @@
                         }
                     }
                 });
+                console.log('applyConfig(): Applied positions for current Situation/Rotation:', currentSituation, currentRotation, savedPositions[currentSituation][currentRotationIndex]);
+            }
+
+            if (savedNames) {
+
+                // use the current rotation index to get the names for the current rotation
+                let rotationsNames = savedNames[currentRotationIndex];
+                for (let i = 0; i < rotationsNames.length; i++) {
+                    let name = rotationsNames[i];
+                    let textBox = document.getElementById('text' + (i + 1));
+                    if (textBox) {
+                        textBox.textContent = name;
+                    }
+                }
+                console.log('applyConfig(): Applied names for current Rotation:', currentRotation, rotationsNames);
+            }
+
+            if(formationName) {
+                document.getElementById('formationName').textContent = `Formation Name: ${formationName}`;
+                console.log('applyConfig(): Applied formation name:', formationName);
             }
         }
 
-        document.querySelectorAll('input').forEach((input, index) => {
+        document.querySelectorAll('input[id^="nameInput"]').forEach((input, positionIndex) => {
+            let positionNumber = positionIndex + 1;
             input.addEventListener('input', function() {
-                document.getElementById('text' + (index + 1)).textContent = this.value;
+                document.getElementById('text' + (positionNumber)).textContent = this.value;
+                
+                let currentRotation = getCurrentRotationButton().textContent.toLowerCase();
+                let currentRotationIndex = parseInt(currentRotation) - 1;
+
+                // TODO: also save the name to the config object, for the current rotation and position
+                config.names[currentRotationIndex][positionIndex] = this.value;
+                saveConfig();
             });
         });
 
         let dragging = null;
         let offsetX = 0, offsetY = 0;
 
-        document.querySelectorAll('.text-box').forEach(textBox => {
+        document.querySelectorAll('.text-box.courtDisplay').forEach(textBox => {
             textBox.addEventListener('mousedown', function(event) {
                 dragging = textBox;
                 dragging.style.cursor = 'grabbing';
@@ -600,7 +754,7 @@
                     dragging.style.cursor = 'grab';
                     dragging.classList.remove('grabbing');
                     // Save the new position of dragged element
-                    savePositions();
+                    saveConfig();
                     dragging = null;
                 }
             });
@@ -638,7 +792,7 @@
         document.addEventListener('mouseup', function() {
             if (isSelecting) {
                 let rect = selectionRect.getBoundingClientRect();
-                document.querySelectorAll('.text-box').forEach(textBox => {
+                document.querySelectorAll('.text-box.courtDisplay').forEach(textBox => {
                     let textBoxRect = textBox.getBoundingClientRect();
                     if (textBoxRect.left >= rect.left && textBoxRect.right <= rect.right &&
                         textBoxRect.top >= rect.top && textBoxRect.bottom <= rect.bottom) {
@@ -661,18 +815,18 @@
             document.getElementById('upcoming-situation').value = 'Rotation';
 
             document.getElementById('jsonExportButton').addEventListener('click', function() {
-                const positions = getLocalStorage('positions'); // Assuming getLocalStorage is a function that retrieves the positions from localStorage
+                const storedConfig = getLocalStorage_config(); // Assuming getLocalStorage is a function that retrieves the positions from localStorage
                 const jsonExportTextBox = document.getElementById('jsonExportTextBox');
-                jsonExportTextBox.value = JSON.stringify(positions, null, 2); // Pretty-print the JSON with 2-space indentation
+                jsonExportTextBox.value = JSON.stringify(storedConfig, null, 2); // Pretty-print the JSON with 2-space indentation
             });
 
             document.getElementById('jsonImportButton').addEventListener('click', function() {
                 const jsonExportTextBox = document.getElementById('jsonExportTextBox');
                 try {
-                    const positions = JSON.parse(jsonExportTextBox.value);
-                    setLocalStorage('positions', positions); // Assuming setLocalStorage is a function that saves the positions to localStorage
+                    const parsedConfig = JSON.parse(jsonExportTextBox.value);
+                    setLocalStorage('config', parsedConfig); // Assuming setLocalStorage is a function that saves the positions to localStorage
                     //alert('Positions imported successfully!');
-                    loadPositions();
+                    loadConfig();
                     //alert('Positions loaded!');
                 } catch (e) {
                     alert('Invalid JSON format. Please check the input.');
@@ -688,9 +842,9 @@
                     const reader = new FileReader();
                     reader.onload = function(event) {
                         try {
-                            const positions = JSON.parse(event.target.result);
-                            setLocalStorage('positions', positions); // Assuming setLocalStorage is a function that saves the positions to localStorage
-                            alert('Positions loaded successfully!');
+                            const parsedConfig = JSON.parse(event.target.result);
+                            setLocalStorage('config', parsedConfig); // Assuming setLocalStorage is a function that saves the positions to localStorage
+                            alert('Config loaded successfully!');
                         } catch (e) {
                             alert('Invalid JSON format. Please check the file.');
                         }
@@ -726,7 +880,7 @@
                 // Remove the link from the document
                 document.body.removeChild(link);
             });
-            loadPositions();
+            loadConfig();
 
         }
 

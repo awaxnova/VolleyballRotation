@@ -100,6 +100,12 @@
         .buttonSituation.upcoming {
             background-color: red;
         }    
+
+        @keyframes dash {
+            to {
+                stroke-dashoffset: -10;
+            }
+        }        
     </style>
 </head>
 <body>
@@ -331,6 +337,8 @@
                 return;
             }
 
+            deleteArrows();
+
             // Iterate through each id in the current positions, and draw an arrow to the upcoming position with the matching id
             for(let i = 0; i<currentPositions.length; i++) {
 
@@ -338,35 +346,68 @@
                 let upcoming = upcomingPositions.find(pos => pos.id === current.id);
 
                 if(upcoming) {
+
+                    
+                    // Calculate the coordinates
+                    let currentX = parseInt(current.left);
+                    let currentY = parseInt(current.top);
+                    let upcomingX = parseInt(upcoming.left);
+                    let upcomingY = parseInt(upcoming.top);
+                    let offsetX = (currentX < upcomingX) ? 10: -10;
+                    let offsetY = (currentY < upcomingY) ? 10: -10;
+                    upcomingX += offsetX;
+                    upcomingY += offsetY;
+                    
                     console.log(`updateArrows(): Drawing arrow from ${current.id} to ${upcoming.id}`);
+                    console.log(`updateArrows(): Current position: (${currentX}, ${currentY})`);
+                    console.log(`updateArrows(): Upcoming position: (${upcomingX}, ${upcomingY})`);
+                    console.log(`updateArrows(): upcoming.width: ${upcoming.width}, upcoming.height: ${upcoming.height}, upcoming.id: ${upcoming.id}, upcoming.left: ${upcoming.left}, upcoming.top: ${upcoming.top}`);
+
                     // Calculate the distance and angle between current and upcoming positions
-                    let deltaX = parseInt(upcoming.left) - parseInt(current.left);
-                    let deltaY = parseInt(upcoming.top) - parseInt(current.top);
+                    let deltaX = upcomingX - currentX;
+                    let deltaY = upcomingY - currentY;
                     let distance = Math.sqrt(deltaX * deltaX + deltaY * deltaY);
                     let angle = Math.atan2(deltaY, deltaX) * (180 / Math.PI);
+        
+                    // Calculate the control points for the curved path
+                    let controlX = (currentX + upcomingX) / 2;
+                    let controlY = Math.min(currentY, upcomingY) - 50; // Adjust the control point for the curve
 
-                    // Create the arrow tail
-                    //let tail = document.createElement('div');
-                    //tail.classList.add('arrow-tail');
-                    //tail.style.position = 'absolute';
-                    //tail.style.width = distance + 'px';
-                    //tail.style.height = '2px';
-                    //tail.style.backgroundColor = 'blue'; // Change the color of the tail here
-                    //tail.style.left = current.left;
-                    //tail.style.top = current.top;
-                    //tail.style.transformOrigin = '0 0';
-                    //tail.style.transform = `rotate(${angle}deg)`;
+                    // Get the dimensions of the display area
+                    let displayArea = document.querySelector('.display-area');
+                    let displayWidth = displayArea.clientWidth;
+                    let displayHeight = displayArea.clientHeight;
 
-                    let tail = document.createElement('div');
-                    tail.classList.add('arrow-tail');
-                    tail.style.position = 'absolute';
-                    tail.style.width = distance + 'px';
-                    tail.style.height = '0'; // Set height to 0 for border to work
-                    tail.style.borderTop = '2px dashed blue'; // Change the color and style of the tail here
-                    tail.style.left = current.left;
-                    tail.style.top = current.top;
-                    tail.style.transformOrigin = '0 0';
-                    tail.style.transform = `rotate(${angle}deg)`;
+                    // Ensure control points are within the display area bounds
+                    controlX = Math.max(0, Math.min(displayWidth, controlX));
+                    controlY = Math.max(0, Math.min(displayHeight, controlY));
+
+
+                    // Create the SVG element
+                    let svgNS = "http://www.w3.org/2000/svg";
+                    let svg = document.createElementNS(svgNS, "svg");
+                    svg.setAttribute("width", "100%");
+                    svg.setAttribute("height", "100%");
+                    svg.style.position = "absolute";
+                    svg.style.left = "0";
+                    svg.style.top = "0";
+                    // Add class arrow-tail to the svg
+                    svg.classList.add('arrow-tail');
+
+                    // Create the path element
+                    let path = document.createElementNS(svgNS, "path");
+                    path.setAttribute("d", `M${currentX},${currentY} Q${controlX},${controlY} ${upcomingX},${upcomingY}`);
+                    path.setAttribute("stroke", "blue"); // Change the color of the arrow tail here
+                    path.setAttribute("stroke-width", "2");
+                    path.setAttribute("fill", "none");
+                    path.setAttribute("stroke-dasharray", "5,5");
+                    path.setAttribute("stroke-dashoffset", "0");
+                    path.style.animation = "dash 2s linear infinite";
+
+                    
+                    // Append the path to the SVG
+                    svg.appendChild(path);
+
 
                     // Create the arrow head
                     let head = document.createElement('div');
@@ -377,14 +418,14 @@
                     head.style.borderLeft = '5px solid transparent';
                     head.style.borderRight = '5px solid transparent';
                     head.style.borderBottom = '10px solid red'; // Change the color of the head here
-                    head.style.left = upcoming.left;
-                    head.style.top = upcoming.top;
-                    head.style.transform = `rotate(${angle}deg)`;
+                    head.style.left = (upcomingX - 5) + 'px'; // Adjust to center the arrow head
+                    head.style.top = (upcomingY - 10) + 'px'; // Adjust to center the arrow head
 
                     // Append the tail and head to the display area
-                    document.querySelector('.display-area').appendChild(tail);
+                    document.querySelector('.display-area').appendChild(svg);
+                    //document.querySelector('.display-area').appendChild(tail);
                     document.querySelector('.display-area').appendChild(head);
-
+                    
                     // // Move the arrow to the upcoming position
                     // setTimeout(() => {
                     //     tail.style.left = upcoming.left;
@@ -402,7 +443,7 @@
 
 
         }
-
+        
         function deleteArrows() {
             document.querySelectorAll('.arrow-tail').forEach(arrow => {
                 arrow.remove();
